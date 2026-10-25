@@ -42,12 +42,12 @@ const scrollTop = () => document.querySelector('main')?.scrollTo(0, 0)
   <PanelDialogs />
   <Toasts />
   <div
-    class="mx-auto flex h-(--view-h) w-full max-w-[1840px] flex-col overflow-hidden bg-surface text-fg shadow-(--shadow-app) sm:my-4 sm:h-[calc(var(--view-h)-32px)] sm:w-[calc(100%-32px)]"
+    class="mx-auto flex h-(--view-h) w-full max-w-[1840px] flex-col overflow-hidden bg-surface text-fg shadow-(--shadow-app) outline outline-line sm:my-4 sm:h-[calc(var(--view-h)-32px)] sm:w-[calc(100%-32px)]"
   >
     <header class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-header bg-(image:--bg-header) px-5 py-3">
       <router-link to="/" class="shrink-0" aria-label="Asynqmon home">
-        <img :src="logoColor" alt="Asynqmon" class="h-8 w-auto" style="display: var(--header-logo-dark-ink)" />
-        <img :src="logoWhite" alt="Asynqmon" class="h-8 w-auto" style="display: var(--header-logo-light-ink)" />
+        <img :src="logoColor" alt="Asynqmon" class="h-10 w-auto" style="display: var(--header-logo-dark-ink)" />
+        <img :src="logoWhite" alt="Asynqmon" class="h-10 w-auto" style="display: var(--header-logo-light-ink)" />
       </router-link>
       <div class="border-l-2 border-header-bar pl-3 leading-tight">
         <div class="text-[15px] font-semibold text-on-header">Task queue monitor</div>
@@ -100,14 +100,14 @@ const scrollTop = () => document.querySelector('main')?.scrollTo(0, 0)
     >
       <span class="font-semibold text-footer-strong">Asynqmon</span>
       <a
-        href="https://github.com/hibiken/asynqmon"
+        href="https://github.com/jniltinho/asynqmon"
         target="_blank"
         rel="noopener"
         class="inline-flex items-center gap-1 hover:text-footer-strong"
         ><Github :size="12" aria-hidden="true" /> GitHub</a
       >
       <a
-        href="https://github.com/hibiken/asynqmon/issues"
+        href="https://github.com/jniltinho/asynqmon/issues"
         target="_blank"
         rel="noopener"
         class="inline-flex items-center gap-1 hover:text-footer-strong"

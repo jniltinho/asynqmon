@@ -97,7 +97,7 @@ const queuesOf = (s) => Object.entries(s.queue_priorities || {}).sort((a, b) => 
                 <td>
                   <span
                     class="tag"
-                    :class="s.status === 'active' ? 'bg-ok-fill text-on-ok-fill' : 'bg-neutral-fill text-on-neutral-fill'"
+                    :class="s.status === 'active' ? 'bg-ok-soft text-on-ok-soft' : 'bg-neutral-fill text-on-neutral-fill'"
                     >{{ s.status }}</span
                   >
                 </td>

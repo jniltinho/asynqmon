@@ -50,3 +50,27 @@ func TestUIAssetsHandler(t *testing.T) {
 		t.Errorf("assets checked %v, want one of each of %v", seen, want)
 	}
 }
+
+func TestUIAssetsHandlerTheme(t *testing.T) {
+	page := func(theme func() (string, bool)) string {
+		h := &uiAssetsHandler{contents: staticContents, staticDirPath: "ui/build", indexFileName: "index.html", theme: theme}
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
+		return rec.Body.String()
+	}
+	tests := []struct {
+		desc  string
+		theme func() (string, bool)
+		want  string
+	}{
+		{"standalone: the default theme, the viewer picks", nil, `data-theme="default" data-flat="false" data-host-theme="false"`},
+		{"host theme and flat look", func() (string, bool) { return "classic-blue", true }, `data-theme="classic-blue" data-flat="true" data-host-theme="true"`},
+		{"an id outside [a-z0-9-] gives the default", func() (string, bool) { return `x" onload="alert(1)`, false }, `data-theme="default" data-flat="false" data-host-theme="true"`},
+		{"an empty id gives the default", func() (string, bool) { return "", false }, `data-theme="default" data-flat="false" data-host-theme="true"`},
+	}
+	for _, tc := range tests {
+		if body := page(tc.theme); !strings.Contains(body, tc.want) {
+			t.Errorf("%s: want %s in\n%s", tc.desc, tc.want, body[:min(len(body), 400)])
+		}
+	}
+}

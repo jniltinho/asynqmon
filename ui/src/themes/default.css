@@ -60,7 +60,7 @@
   --color-toast-warn: #cc4b00; /* was #ef6c00 */
   --color-ok: #007624; /* was #2fa14f */
   --color-warn: #b93800; /* was #ef6c00 */
-  --color-focus: #ca6700; /* asynqmon: 3:1 on the zebra rows and card heads too, was #e67500, before #f58322 */
+  --color-focus: #e67500; /* was #f58322 */
   --color-fg-subtle: #596778; /* was #8b9aad */
   --color-link-hover: #c03500; /* 4.5:1 on row-hover too (table actions), was #d83c00, before #fe6101 */
   --color-err: #c32425; /* was #c62828 */

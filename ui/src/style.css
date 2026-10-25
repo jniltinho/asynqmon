@@ -8,12 +8,13 @@
 @import './themes/cone.css';
 @import './themes/classics.css';
 @import './themes/graphite.css';
+@import './themes/grafana.css';
+@import './themes/rabbitmq.css';
 @import './themes/matrix.css';
 @import './themes/winamp.css';
 @import './themes/pink-panther.css';
 @import './themes/high-contrast.css';
-@import './themes/grafana.css';
-@import './themes/rabbitmq.css';
+@import './asynqmon-overrides.css';
 
 /* Default theme — tokens of the original skin (site kit).
    No border-radius anywhere: square corners. */
@@ -352,6 +353,7 @@ html[data-scheme='dark'] {
   /* which product logo shows: dark ink (for light backgrounds) or light ink (for dark ones), as display values */
   --header-logo-dark-ink: block;
   --header-logo-light-ink: none;
+  --login-shadow-img: url('./assets/login_shadow.png'); /* the elliptic shadow under the login box */
   --login-shadow-y: 0px; /* how far the shadow sits lower (a theme whose box casts an outer frame) */
   --login-logo-dark-ink: none;
   --login-logo-light-ink: block;
@@ -1078,6 +1080,11 @@ header :focus-visible {
 }
 .app-footer :focus-visible {
   outline-color: var(--color-on-footer);
+}
+/* a selected task row: the row-hover fill plus an edge in the focus color (3:1 on that fill, asynq/focus/row-hover),
+   which still shows on the zebra rows of dark themes */
+.grid-t tbody tr.sel > td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-focus);
 }
 /* a partly selected page: the header checkbox shows a dash */
 input[type='checkbox']:indeterminate {

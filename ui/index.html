@@ -3,7 +3,7 @@
   Prometheus address and the read-only flag. Under `vp dev` they stay unevaluated and main.js falls back to defaults.
 -->
 <!doctype html>
-<html lang="en" data-theme="default">
+<html lang="en" data-theme="/[[.Theme]]" data-flat="/[[.Flat]]" data-host-theme="/[[.HostTheme]]">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,12 +18,27 @@
       window.FLAG_ROOT_PATH = '/[[.RootPath]]'
       window.FLAG_PROMETHEUS_SERVER_ADDRESS = '/[[.PrometheusAddr]]'
       window.FLAG_READ_ONLY = '/[[.ReadOnly]]'
-      // the saved theme before the first paint (no flash of the default)
-      try {
-        const s = JSON.parse(localStorage.getItem('asynqmon:settings') || '{}')
-        if (s.theme && s.theme !== 'auto') document.documentElement.dataset.theme = s.theme
-        if (s.flat) document.documentElement.dataset.flat = 'true'
-      } catch {}
+      // the theme before the first paint (no flash of the default): the host application's when the server set one
+      // (Options.Theme), else the viewer's saved choice; unevaluated template actions (vp dev) mean the default
+      ;(() => {
+        const html = document.documentElement
+        // a host "auto" theme is resolved here too (settings.js keeps following the system after)
+        const auto = () => (matchMedia('(prefers-color-scheme: dark)').matches ? 'grafana' : 'default')
+        if (html.dataset.hostTheme === 'true') {
+          if (html.dataset.theme === 'auto') {
+            html.dataset.hostAuto = 'true'
+            html.dataset.theme = auto()
+          }
+          return
+        }
+        html.dataset.theme = 'default'
+        html.dataset.flat = 'false'
+        try {
+          const s = JSON.parse(localStorage.getItem('asynqmon:settings') || '{}')
+          if (s.theme) html.dataset.theme = s.theme === 'auto' ? auto() : s.theme
+          if (s.flat) html.dataset.flat = 'true'
+        } catch {}
+      })()
     </script>
     <title>Asynq - Monitoring</title>
   </head>

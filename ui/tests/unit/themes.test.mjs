@@ -10,13 +10,17 @@ const { values, dark } = contract(style)
 const known = new Set(values.keys())
 const themeFiles = files(join(SRC, 'themes')).filter((f) => f.endsWith('.css'))
 const blocks = new Map(themeFiles.flatMap((f) => [...themeFile(read(f), known).blocks]))
+// asynqmon's own adjustments (the theme files are ad-manager's, kept identical): merged over each theme's block
+const OVERRIDES = join(SRC, 'asynqmon-overrides.css')
+const overrides = themeFile(read(OVERRIDES), known)
+for (const [id, roles] of overrides.blocks) blocks.set(id, new Map([...(blocks.get(id) || []), ...roles]))
 const scheme = (id) => registry.find((t) => t.id === id).scheme
 // what the browser applies: the contract, the dark task states (dark themes), then the theme's own roles
 const merged = (id) => new Map([...values, ...(scheme(id) === 'dark' ? dark : []), ...(blocks.get(id) || [])])
 
 describe('theme files', () => {
   test('only role declarations under :root[data-theme]', () => {
-    for (const f of themeFiles) expect(themeFile(read(f), known).errors, f).toEqual([])
+    for (const f of [...themeFiles, OVERRIDES]) expect(themeFile(read(f), known).errors, f).toEqual([])
   })
   test('every role of every theme has the right type', () => {
     expect(typeErrors(values), 'contract').toEqual([])
@@ -31,6 +35,8 @@ describe('registry', () => {
     for (const t of ids.slice(1)) expect(blocks.has(t), `no CSS for theme ${t}`).toBe(true)
     for (const b of blocks.keys()) expect(ids, `theme ${b} not in the registry`).toContain(b)
     for (const f of themeFiles) expect(style).toContain(`@import './themes/${f.split('/').pop()}'`)
+    expect(style).toContain(`@import './asynqmon-overrides.css'`)
+    for (const id of overrides.blocks.keys()) expect(ids, `override of an unknown theme ${id}`).toContain(id)
   })
   test('dark themes redefine every color, background and shadow (no light default leaks)', () => {
     const required = darkRequired(known).filter((r) => !dark.has(r))
@@ -49,7 +55,10 @@ describe('registry', () => {
 
 describe('color lint', () => {
   test('components and style.css use roles only', () => {
-    const found = files().flatMap((f) => lint(f))
+    // the overrides file is a theme file (checked by themeFile and typeErrors above), not a component
+    const found = files()
+      .filter((f) => f !== OVERRIDES)
+      .flatMap((f) => lint(f))
     expect(found.map((f) => `${f.file}:${f.line} ${f.reason}: ${f.value}`)).toEqual([])
   })
 })
@@ -70,7 +79,9 @@ describe('square corners', () => {
 })
 
 describe('contrast', () => {
-  const matrix = JSON.parse(read(join(SRC, 'themes/matrix.json')))
+  const base = JSON.parse(read(join(SRC, 'themes/matrix.json')))
+  const own = JSON.parse(read(join(SRC, 'themes/asynq-recipes.json')))
+  const matrix = { ...base, recipes: [...base.recipes, ...own.recipes] }
   for (const { id } of registry) {
     test(`theme ${id}: every recipe passes (AA; AAA for the themes in matrix.aaa)`, () => {
       const aaa = (matrix.aaa || []).includes(id)

@@ -479,6 +479,7 @@
   --header-logo-light-ink: block;
   --login-logo-dark-ink: none;
   --login-logo-light-ink: block;
+  --login-shadow-img: url('../assets/login_shadow_light.png'); /* a light glow on the dark page */
 
   /* macOS organization (crystal-aaa): unified toolbar, segmented tabs, Finder sidebar, sheets, banners */
   --dialog-top: 0.1; /* a sheet sliding down to 10% of the height, as every dialog; was 0 (hanging from the top) */

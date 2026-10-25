@@ -235,4 +235,5 @@
   --header-logo-light-ink: block;
   --login-logo-dark-ink: none;
   --login-logo-light-ink: block;
+  --login-shadow-img: url('../assets/login_shadow_light.png'); /* a light glow on the dark page */
 }

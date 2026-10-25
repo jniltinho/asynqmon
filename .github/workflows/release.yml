@@ -1,54 +1,33 @@
 name: Release
 
+# On a published GitHub release: build the binary (web UI included) for each OS and attach it to the release.
 on:
   release:
-    types:
-      - created
+    types: [created]
+
+permissions:
+  contents: write
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         goos: [darwin, linux, windows]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "22"
-
-      - name: Get release
-        id: release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Install NPM packages
-        run: cd ui && npm ci
-
-      - name: Build Release Binary
+          node-version: "24"
+      - name: Build the release binary
         run: |
+          cd ui && npm ci && cd ..
           GOOS=${{ matrix.goos }} GOARCH=amd64 make build
-          tar -czvf asynqmon_${{ steps.release.outputs.tag_name }}_${{ matrix.goos }}_amd64.tar.gz asynqmon
-          ls
-
-      - name: Upload Release Binary
-        id: upload-go-release-asset
-        uses: actions/upload-release-asset@v1
+          tar -czvf asynqmon_${{ github.event.release.tag_name }}_${{ matrix.goos }}_amd64.tar.gz asynqmon
+      - name: Attach it to the release
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_path: ./asynqmon_${{ steps.release.outputs.tag_name }}_${{ matrix.goos }}_amd64.tar.gz
-          asset_name: asynqmon_${{ steps.release.outputs.tag_name }}_${{ matrix.goos }}_amd64.tar.gz
-          asset_content_type: application/gzip
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" asynqmon_${{ github.event.release.tag_name }}_${{ matrix.goos }}_amd64.tar.gz

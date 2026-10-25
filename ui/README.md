@@ -14,6 +14,8 @@ receives the root path, the Prometheus address and the read-only flag.
 | `npm run screenshots` | 2× screenshots of every page into `../docs/screenshots`, failing on console errors                   |
 
 Layout: `src/api.js` (every API call), `src/pages/*` (one per route, the same paths as the earlier React UI),
-`src/components/*`, `src/style.css` (the role contract and the component recipes) and `src/themes/*` (one block of
-role values per theme, `registry.js` lists them). Components use role utilities only (`text-fg`, `bg-surface`…),
+`src/components/*`, `src/style.css` (the role contract and the component recipes), `src/themes/*` (ad-manager's
+theme files, copied as they are; `registry.js` lists them, `asynq-recipes.json` adds asynqmon's contrast checks to
+`matrix.json`) and `src/asynqmon-overrides.css` (asynqmon's per-theme adjustments). `THEME_MATRIX=<dir> npm run
+screenshots` captures every page in every theme, normal and flat. Components use role utilities only (`text-fg`, `bg-surface`…),
 never literal colors; the theme tests enforce it.

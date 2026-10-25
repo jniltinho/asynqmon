@@ -1,5 +1,5 @@
 {
-  "comment": "Contrast recipes (theme-base): text role over the background roles where it appears (layers top\u2192bottom). size: normal 4.5:1, large/ui 3:1. pending: the pairs a theme may still fail (empty since phase B of openspec/changes/theme-base); the test fails unless this list is exactly the failing set. aaa: themes held to enhanced contrast (WCAG 1.4.6: normal text 7:1, large 4.5:1; components 1.4.11 3:1). aaaOnly: a recipe only the aaa themes are held to (the selected segment, the solid login focus ring). segmentedOnly: only where the tabs are a segmented control (--subtabs-gap and --subtab-inset-top 0: Crystal), whose fill is the only mark of the selected tab; folder tabs (High contrast) mark it with the bar on top instead. asynq/state-*: the task state colors (chart series, state bars and dots) are UI components, 3:1 on the surface; dark themes take them from html[data-scheme='dark'] in style.css. asynq/focus/*: the keyboard focus ring (3:1) on the other backgrounds a focused control sits on in asynqmon (zebra and selected rows, toolbars, card heads; on the header and the tab strip the ring takes their text color, style.css).",
+  "comment": "Contrast recipes (theme-base): text role over the background roles where it appears (layers top→bottom). size: normal 4.5:1, large/ui 3:1. pending: the pairs a theme may still fail (empty since phase B of openspec/changes/theme-base); the test fails unless this list is exactly the failing set. aaa: themes held to enhanced contrast (WCAG 1.4.6: normal text 7:1, large 4.5:1; components 1.4.11 3:1). aaaOnly: a recipe only the aaa themes are held to (the selected segment, the solid login focus ring). segmentedOnly: only where the tabs are a segmented control (--subtabs-gap and --subtab-inset-top 0: Crystal), whose fill is the only mark of the selected tab; folder tabs (High contrast) mark it with the bar on top instead.",
   "recipes": [
     {
       "id": "text/page",
@@ -622,78 +622,6 @@
       "id": "subtle/row-hover",
       "fg": "fg-subtle",
       "bg": ["row-hover"],
-      "size": "normal"
-    },
-    {
-      "id": "asynq/state-active",
-      "fg": "state-active",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-pending",
-      "fg": "state-pending",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-aggregating",
-      "fg": "state-aggregating",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-scheduled",
-      "fg": "state-scheduled",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-retry",
-      "fg": "state-retry",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-archived",
-      "fg": "state-archived",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/state-completed",
-      "fg": "state-completed",
-      "bg": ["surface"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/focus/row-alt",
-      "fg": "focus",
-      "bg": ["row-alt"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/focus/row-hover",
-      "fg": "focus",
-      "bg": ["row-hover"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/focus/surface-2",
-      "fg": "focus",
-      "bg": ["surface-2"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/focus/card-head",
-      "fg": "focus",
-      "bg": ["card-head"],
-      "size": "ui"
-    },
-    {
-      "id": "asynq/footer-strong/footer-top",
-      "fg": "footer-strong",
-      "bg": ["footer-top"],
       "size": "normal"
     }
   ],

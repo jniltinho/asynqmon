@@ -241,6 +241,7 @@
   --header-logo-light-ink: block;
   --login-logo-dark-ink: none;
   --login-logo-light-ink: block;
+  --login-shadow-img: url('../assets/login_shadow_light.png'); /* a light glow on the dark page */
   /* the skin's 1 px relief: light on top and left, dark on bottom and right */
   --bevel-raised: inset 1px 1px #6a6d88, inset -1px -1px #0b0b10;
   --bevel-sunken: inset 1px 1px #0b0b10, inset -1px -1px #4a4c63;

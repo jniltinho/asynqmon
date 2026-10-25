@@ -42,6 +42,14 @@ type Options struct {
 
 	// Set ReadOnly to true to restrict user to view-only mode.
 	ReadOnly bool
+
+	// Theme makes the web UI follow the theme of the application that embeds asynqmon. It is called for every
+	// page load and returns a theme id of the UI (for example "default", "classic-blue" or "grafana", or "auto" to
+	// follow each viewer's light or dark system setting) and whether the flat look is on. The page is served with that theme already set and the UI hides its own theme picker.
+	// An empty id, or one with characters outside [a-z0-9-], gives the UI's default theme.
+	//
+	// This field is optional. When it is nil, viewers choose the theme in the UI's settings.
+	Theme func() (id string, flat bool)
 }
 
 // HTTPHandler is a http.Handler for asynqmon application.
@@ -220,6 +228,7 @@ func muxRouter(opts Options, rc redis.UniversalClient, inspector *asynq.Inspecto
 		indexFileName:  "index.html",
 		prometheusAddr: opts.PrometheusAddress,
 		readOnly:       opts.ReadOnly,
+		theme:          opts.Theme,
 	}
 
 	return router

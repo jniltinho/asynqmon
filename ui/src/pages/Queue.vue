@@ -72,7 +72,7 @@ async function togglePause() {
           </select>
         </label>
       </nav>
-      <span v-if="q" class="tag" :class="q.paused ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-fill text-on-ok-fill'">
+      <span v-if="q" class="tag" :class="q.paused ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-soft text-on-ok-soft'">
         {{ q.paused ? 'paused' : 'running' }}
       </span>
       <button v-if="q && !readOnly" class="btn-ghost ml-auto" @click="togglePause">
@@ -98,7 +98,7 @@ async function togglePause() {
             class="px-3 py-2"
           >
             <dt class="text-[11px] font-semibold text-fg-muted uppercase">{{ l }}</dt>
-            <dd class="text-lg font-semibold text-fg-strong tabular-nums" :class="cls">{{ v }}</dd>
+            <dd class="text-lg font-semibold tabular-nums" :class="cls || 'text-fg-strong'">{{ v }}</dd>
           </div>
         </dl>
         <div class="border-t border-line px-3 py-2"><StateBar :queue="q" /></div>

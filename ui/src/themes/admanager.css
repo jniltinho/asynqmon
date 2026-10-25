@@ -34,7 +34,7 @@
   --color-on-tab-aux: #fff; /* API / Queues links: white on the band (also over its lighter top) */
   --color-tab-divider: #424f56;
   --tab-divider-w: 1px;
-  --tab-hover-filter: none; /* asynqmon: brightness(1.12) took the white tab labels below 4.5:1 */
+  --tab-hover-filter: brightness(1.12);
   /* refined: a little room in the band and the other tabs 3px lower, so the white current tab stands taller */
   --tabs-pad: 4px;
   --tab-inset-top: 3px;
@@ -116,10 +116,8 @@
   --color-on-login-box-muted: rgba(255, 255, 255, 0.63); /* was rgba(255, 255, 255, 0.6) */
   --color-on-login-box-faint: rgba(255, 255, 255, 0.63); /* was rgba(255, 255, 255, 0.55) */
   --color-login-title: #94cf65; /* was #80ba50 */
-  --color-focus: #5b8c30; /* asynqmon: 3:1 on the zebra rows and card heads too, was #6aa338, before #80ba50 */
+  --color-focus: #6aa338; /* was #80ba50 */
   --color-fg-subtle: #626262; /* 4.5:1 on row-hover too, was #6d6d6d, before #a0a0a0 */
   --color-link-hover: #33701c; /* 4.5:1 on row-hover too (table actions), was #3e8522, before #64ac4b */
   --color-warn: #ad4100; /* was #c25418 */
-  --btn-hover-filter: none; /* asynqmon: a brighter fill takes the button labels below 4.5:1 */
-  --color-footer-strong: #a8d486; /* asynqmon: 4.5:1 over the whole footer gradient (links hover to it) */
 }

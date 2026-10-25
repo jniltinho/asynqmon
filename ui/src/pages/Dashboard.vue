@@ -213,7 +213,7 @@ async function remove(q) {
                 </router-link>
               </td>
               <td>
-                <span class="tag" :class="q.paused ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-fill text-on-ok-fill'">
+                <span class="tag" :class="q.paused ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-soft text-on-ok-soft'">
                   {{ q.paused ? 'paused' : 'running' }}
                 </span>
               </td>

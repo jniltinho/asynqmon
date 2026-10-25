@@ -1,6 +1,6 @@
 <script setup>
 // Viewer settings (this browser only): theme, flat look, refresh interval and table rows.
-import { settings } from '../settings'
+import { hostTheme, settings, themeOf } from '../settings'
 import { themes } from '../themes/registry'
 
 const prometheus = window.PROMETHEUS_SERVER_ADDRESS
@@ -9,7 +9,17 @@ const readOnly = window.READ_ONLY
 
 <template>
   <div class="grid max-w-5xl gap-5 lg:grid-cols-[2fr_1fr]">
-    <section class="card lg:row-span-3">
+    <section v-if="hostTheme" class="card lg:row-span-3">
+      <h2 class="card-h">Theme</h2>
+      <dl class="kv">
+        <dt>Theme</dt>
+        <dd>{{ hostTheme.id === 'auto' ? `Automatic (follows the system): ${themeOf('auto').label}` : themeOf(hostTheme.id).label }}</dd>
+        <dt>Flat look</dt>
+        <dd>{{ hostTheme.flat ? 'on' : 'off' }}</dd>
+      </dl>
+      <p class="border-t border-line px-3 py-2 text-[11px] text-fg-muted">Set by the application asynqmon runs in.</p>
+    </section>
+    <section v-else class="card lg:row-span-3">
       <h2 class="card-h">Theme</h2>
       <fieldset class="p-3">
         <legend class="sr-only">Theme</legend>

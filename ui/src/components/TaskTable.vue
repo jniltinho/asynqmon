@@ -259,7 +259,7 @@ const to = computed(() => Math.min(total.value, page.value * settings.pageSize))
         </thead>
         <tbody>
           <template v-for="t in tasks" :key="t.id">
-            <tr :class="selected.has(t.id) ? 'bg-row-hover!' : ''">
+            <tr :class="selected.has(t.id) ? 'sel bg-row-hover!' : ''">
               <td v-if="actions.length">
                 <input
                   type="checkbox"
@@ -293,7 +293,7 @@ const to = computed(() => Math.min(total.value, page.value * settings.pageSize))
                 <template v-else-if="k === 'status'">
                   <span
                     class="tag"
-                    :class="t.is_orphaned ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-fill text-on-ok-fill'"
+                    :class="t.is_orphaned ? 'bg-warn-fill text-on-warn-fill' : 'bg-ok-soft text-on-ok-soft'"
                     :title="t.is_orphaned ? 'The worker processing it stopped; the task returns to pending after its lease expires.' : ''"
                     >{{ t.is_orphaned ? 'orphaned' : 'running' }}</span
                   >

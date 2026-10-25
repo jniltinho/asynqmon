@@ -237,5 +237,6 @@
   --header-logo-light-ink: block;
   --login-logo-dark-ink: none;
   --login-logo-light-ink: block;
+  --login-shadow-img: none;
   --focus-ring-w: 3px;
 }

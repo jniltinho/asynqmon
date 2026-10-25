@@ -9,6 +9,10 @@ It supports integration with [Prometheus](https://prometheus.io) to display time
 
 Asynqmon is both a library that you can include in your web application, as well as a binary that you can simply install and run.
 
+This repository continues [hibiken/asynqmon](https://github.com/hibiken/asynqmon) on its own: a Vue 3 web UI with the
+20 themes of the [ad-manager](https://github.com/jniltinho/ad-manager) panel, `Options.Theme` for applications that
+embed it, and Go 1.27. The Go module is `github.com/jniltinho/asynqmon`.
+
 ## Version Compatibility
 
 Please make sure the version compatibility with the Asynq package you are using.
@@ -33,7 +37,7 @@ There're a few options to install the binary:
 
 ### Release binaries
 
-You can download the release binary for your system from the [releases page](https://github.com/hibiken/asynqmon/releases).
+You can download the release binary for your system from the [releases page](https://github.com/jniltinho/asynqmon/releases).
 
 ### Docker image
 
@@ -41,10 +45,10 @@ To pull the Docker image:
 
 ```bash
 # Pull the latest image
-docker pull hibiken/asynqmon
+docker pull ghcr.io/jniltinho/asynqmon
 
 # Or specify the image by tag
-docker pull hibiken/asynqmon[:tag]
+docker pull ghcr.io/jniltinho/asynqmon[:tag]
 ```
 
 ### Building from source
@@ -80,7 +84,7 @@ To use the defaults, simply run and open http://localhost:8080.
 docker run --rm \
     --name asynqmon \
     -p 8080:8080 \
-    hibiken/asynqmon
+    ghcr.io/jniltinho/asynqmon
 ```
 
 By default, Asynqmon web server listens on port `8080` and connects to a Redis server running on `127.0.0.1:6379`.
@@ -92,7 +96,7 @@ To see all available flags, run:
 ./asynqmon --help
 
 # with a docker image
-docker run hibiken/asynqmon --help
+docker run ghcr.io/jniltinho/asynqmon --help
 ```
 
 Here's the available flags:
@@ -166,14 +170,14 @@ The address can be specified via `--prometheus-addr`. This enables the metrics v
 docker run --rm \
     --name asynqmon \
     -p 3000:3000 \
-    hibiken/asynqmon --port=3000 --redis-addr=host.docker.internal:6380
+    ghcr.io/jniltinho/asynqmon --port=3000 --redis-addr=host.docker.internal:6380
 
 # with Docker (connect to a Redis server running in the Docker container)
 docker run --rm \
     --name asynqmon \
     --network dev-network \
     -p 8080:8080 \
-    hibiken/asynqmon --redis-addr=dev-redis:6379
+    ghcr.io/jniltinho/asynqmon --redis-addr=dev-redis:6379
 ```
 
 Next, go to [localhost:8080](http://localhost:8080) and see Asynqmon dashboard:
@@ -199,11 +203,14 @@ actions on a selection or on every task of the state, each destructive one behin
 
 ### Themes
 
-The web UI comes with 20 themes (Settings → Theme, kept in the browser), with square corners and an optional flat
-look: Default, Classic blue (XP), Classic gray (98), Graphite, Breeze, Violet, Aurora, Crystal, Cone, Matrix, Winamp,
-Pink Panther, High contrast and others, plus **Grafana** (dark, the Grafana 11 look) and **RabbitMQ** (the RabbitMQ
-management UI look). "Automatic" follows the system: Default on a light system, Grafana on a dark one. Every theme
-passes WCAG AA contrast (Classic blue, Crystal and High contrast AAA), checked by the UI unit tests.
+The web UI has the 20 themes of the [ad-manager](https://github.com/jniltinho/ad-manager) panel, from the same
+files (`ui/src/themes/*.css`, kept identical to the panel's), with square corners and an optional flat look:
+Default, ADManager, Breeze, Violet, Aurora and Crystal (each also dark), Cone, Classic blue (XP), Classic gray (98),
+Graphite, **Grafana** (the Grafana 11 look), **RabbitMQ** (the RabbitMQ management UI look), Matrix, Winamp,
+Pink Panther and High contrast. Settings → Theme keeps the choice in the browser; "Automatic" follows the system
+(Default on a light system, Grafana on a dark one). Every theme passes WCAG AA contrast (Classic blue, Crystal and
+High contrast AAA), checked by the UI unit tests; asynqmon's own adjustments (for example the focus ring on zebra
+rows) live in `ui/src/asynqmon-overrides.css`.
 
 | Grafana | RabbitMQ |
 | --- | --- |
@@ -233,7 +240,7 @@ fails on any console error or failed request.
 
 ## Import as a Library
 
-[![GoDoc](https://godoc.org/github.com/hibiken/asynqmon?status.svg)](https://godoc.org/github.com/hibiken/asynqmon)
+[![Go Reference](https://pkg.go.dev/badge/github.com/jniltinho/asynqmon.svg)](https://pkg.go.dev/github.com/jniltinho/asynqmon)
 
 Asynqmon is also a library which can be imported into an existing web application.
 
@@ -247,7 +254,7 @@ import (
 	"net/http"
 
 	"github.com/hibiken/asynq"
-	"github.com/hibiken/asynqmon"
+	"github.com/jniltinho/asynqmon"
 )
 
 func main() {
@@ -275,7 +282,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hibiken/asynq"
-	"github.com/hibiken/asynqmon"
+	"github.com/jniltinho/asynqmon"
 )
 
 func main() {
@@ -306,7 +313,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/hibiken/asynq"
-	"github.com/hibiken/asynqmon"
+	"github.com/jniltinho/asynqmon"
 )
 
 func main() {
@@ -326,6 +333,24 @@ func main() {
 ```
 
 
+### Following the host application's theme
+
+An application that embeds asynqmon can make the UI follow its own theme with `Options.Theme`, a
+`func() (id string, flat bool)` called for every page load. The page is served with that theme already set (no
+flash) and the UI hides its theme picker; ids are the UI's themes (`default`, `classic-blue`, `grafana`, …, or `auto`
+to follow the viewer's light or dark system setting), and an
+empty id or one outside `[a-z0-9-]` gives the default theme. Leave it nil and viewers choose in Settings.
+
+```go
+h := asynqmon.New(asynqmon.Options{
+	RootPath:     "/monitoring",
+	RedisConnOpt: asynq.RedisClientOpt{Addr: ":6379"},
+	Theme: func() (string, bool) {
+		return currentSettings().Theme, currentSettings().FlatLook // the host's own settings
+	},
+})
+```
+
 ## License
 
-Copyright (c) 2019-present [Ken Hibino](https://github.com/hibiken) and [Contributors](https://github.com/hibiken/asynqmon/graphs/contributors). `Asynqmon` is free and open-source software licensed under the [MIT License](https://github.com/hibiken/asynq/blob/master/LICENSE). Official logo was created by [Vic Shóstak](https://github.com/koddr) and distributed under [Creative Commons](https://creativecommons.org/publicdomain/zero/1.0/) license (CC0 1.0 Universal).
+Based on [hibiken/asynqmon](https://github.com/hibiken/asynqmon). Copyright (c) 2019-present [Ken Hibino](https://github.com/hibiken) and [Contributors](https://github.com/hibiken/asynqmon/graphs/contributors). `Asynqmon` is free and open-source software licensed under the [MIT License](https://github.com/hibiken/asynq/blob/master/LICENSE). Official logo was created by [Vic Shóstak](https://github.com/koddr) and distributed under [Creative Commons](https://creativecommons.org/publicdomain/zero/1.0/) license (CC0 1.0 Universal).

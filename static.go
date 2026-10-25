@@ -8,6 +8,7 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -22,6 +23,23 @@ type uiAssetsHandler struct {
 	indexFileName  string
 	prometheusAddr string
 	readOnly       bool
+	theme          func() (id string, flat bool) // Options.Theme
+}
+
+// themeID accepts the theme ids of the UI ([a-z0-9-]); anything else gives the default theme.
+var themeID = regexp.MustCompile(`^[a-z0-9-]{1,64}$`)
+
+// pageTheme is the theme the page is served with: the host's (Options.Theme), or the default one, which the UI
+// then replaces with the viewer's choice.
+func (h *uiAssetsHandler) pageTheme() (id string, flat, host bool) {
+	if h.theme == nil {
+		return "default", false, false
+	}
+	id, flat = h.theme()
+	if !themeID.MatchString(id) {
+		id = "default"
+	}
+	return id, flat, true
 }
 
 // ServeHTTP inspects the URL path to locate a file within the static dir
@@ -61,14 +79,21 @@ func (h *uiAssetsHandler) renderIndexFile(w http.ResponseWriter) error {
 	if err != nil {
 		return err
 	}
+	theme, flat, host := h.pageTheme()
 	data := struct {
 		RootPath       string
 		PrometheusAddr string
 		ReadOnly       bool
+		Theme          string
+		Flat           bool
+		HostTheme      bool
 	}{
 		RootPath:       h.rootPath,
 		PrometheusAddr: h.prometheusAddr,
 		ReadOnly:       h.readOnly,
+		Theme:          theme,
+		Flat:           flat,
+		HostTheme:      host,
 	}
 	return tmpl.Execute(w, data)
 }

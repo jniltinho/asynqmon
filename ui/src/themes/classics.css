@@ -544,12 +544,4 @@
   --bevel-raised: inset -1px -1px #000, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
   --bevel-sunken: inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #000;
   --bevel-pressed: inset -1px -1px #fff, inset 1px 1px #000, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
-  /* asynqmon task states: the Windows 98 16-color palette, darkened where needed for 3:1 on the #c0c0c0 face */
-  --color-state-active: #000080;
-  --color-state-pending: #006a6a;
-  --color-state-aggregating: #404040;
-  --color-state-scheduled: #800080;
-  --color-state-retry: #7a4a00;
-  --color-state-archived: #800000;
-  --color-state-completed: #006e00;
 }
