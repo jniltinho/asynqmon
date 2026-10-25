@@ -1,0 +1,28 @@
+/* asynqmon's adjustments to the themes. themes/*.css are ad-manager's files, kept identical (copy them over to
+ * update); what asynqmon needs on top — only roles and parameters, per theme — lives here and is checked by the
+ * same theme tests (tests/unit/themes.test.mjs, with themes/asynq-recipes.json on top of themes/matrix.json). */
+
+/* the keyboard focus ring at 3:1 on the zebra and selected rows, toolbars and card heads too (the panel's orange
+   reaches 2.4:1 on its blue zebra rows) */
+:root[data-theme='default'] {
+  --color-focus: #ca6700; /* panel: #e67500 */
+}
+
+:root[data-theme='admanager'] {
+  --color-focus: #5b8c30; /* panel: #6aa338 */
+  /* hover: the panel brightens buttons and tabs (brightness 1.1 / 1.12), which takes their white labels below 4.5:1 */
+  --btn-hover-filter: none;
+  --tab-hover-filter: none;
+  --color-footer-strong: #a8d486; /* footer links hover to it: 4.5:1 over both footer gradient stops (panel #80ba50) */
+}
+
+/* task states on the #c0c0c0 face: the Windows 98 16-color palette, darkened where needed for 3:1 */
+:root[data-theme='classic-gray'] {
+  --color-state-active: #000080;
+  --color-state-pending: #006a6a;
+  --color-state-aggregating: #404040;
+  --color-state-scheduled: #800080;
+  --color-state-retry: #7a4a00;
+  --color-state-archived: #800000;
+  --color-state-completed: #006e00;
+}

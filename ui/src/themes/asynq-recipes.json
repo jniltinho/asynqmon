@@ -1,0 +1,77 @@
+{
+  "comment": "asynqmon's own contrast recipes, on top of themes/matrix.json (a copy of ad-manager's, kept identical): the task state colors (UI components, 3:1 on the surface), the keyboard focus ring on the backgrounds a focused control sits on in asynqmon, and the footer text over both footer gradient stops. The edge of a selected task row is the focus color on the row-hover fill: asynq/focus/row-hover.",
+  "recipes": [
+    {
+      "id": "asynq/state-active",
+      "fg": "state-active",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-pending",
+      "fg": "state-pending",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-aggregating",
+      "fg": "state-aggregating",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-scheduled",
+      "fg": "state-scheduled",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-retry",
+      "fg": "state-retry",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-archived",
+      "fg": "state-archived",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/state-completed",
+      "fg": "state-completed",
+      "bg": ["surface"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/focus/row-alt",
+      "fg": "focus",
+      "bg": ["row-alt"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/focus/row-hover",
+      "fg": "focus",
+      "bg": ["row-hover"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/focus/surface-2",
+      "fg": "focus",
+      "bg": ["surface-2"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/focus/card-head",
+      "fg": "focus",
+      "bg": ["card-head"],
+      "size": "ui"
+    },
+    {
+      "id": "asynq/footer-strong/footer-top",
+      "fg": "footer-strong",
+      "bg": ["footer-top"],
+      "size": "normal"
+    }
+  ]
+}

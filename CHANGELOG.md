@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- (ui): The web UI is rewritten in Vue 3 + Vite+ + Tailwind CSS 4 (from React + Material-UI), with the same pages,
+  paths and API calls: a queue health overview, state tabs with counts, a payload / result viewer, bulk actions with
+  confirmations, loading and empty states, keyboard navigation and visible focus.
+- (ui): The 20 themes of the ad-manager panel (same files) with an optional flat look, among them Grafana and
+  RabbitMQ; every theme passes WCAG AA.
+
+### Added
+
+- `Options.Theme`: an embedding application can make the UI follow its own theme (served with the page, no theme
+  picker).
+- The build uses npm instead of Yarn (`make assets`, Dockerfile).
+
+### Fixed
+
+- Static files are served with the MIME type of their extension (stylesheets, module scripts and SVG images).
+
 ## [0.7.0] - 2022-04-11
 
 Version 0.7 added support for [Task Aggregation](https://github.com/hibiken/asynq/wiki/Task-aggregation) feature
