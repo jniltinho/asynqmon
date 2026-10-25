@@ -1,9 +1,18 @@
-.PHONY: api assets build docker
+.PHONY: api assets build docker ui-check seed
 
-NODE_PATH ?= $(PWD)/ui/node_modules
+# Build the web UI (Vue 3 + Vite+) into ui/build, which the Go binary embeds.
 assets:
-	@if [ ! -d "$(NODE_PATH)"  ]; then cd ./ui && yarn install --modules-folder $(NODE_PATH); fi
-	cd ./ui && yarn build --modules-folder $(NODE_PATH)
+	@if [ ! -d ui/node_modules ]; then cd ./ui && npm ci; fi
+	cd ./ui && npm run build
+
+# Format, lint and unit tests of the web UI (theme contrast matrix included).
+ui-check:
+	@if [ ! -d ui/node_modules ]; then cd ./ui && npm ci; fi
+	cd ./ui && npm run check && npm test
+
+# Fill a local, throwaway Redis with sample tasks (REDIS_ADDR, default 127.0.0.1:6379).
+seed:
+	go run ./tools/seed
 
 # This target skips the overhead of building UI assets.
 # Intended to be used during development.

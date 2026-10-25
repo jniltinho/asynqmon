@@ -5,6 +5,7 @@ import (
 	"errors"
 	"html/template"
 	"io/fs"
+	"mime"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -98,11 +99,10 @@ func (h *uiAssetsHandler) serveFile(w http.ResponseWriter, path string) (code in
 		}
 		return http.StatusInternalServerError, err
 	}
-	// Setting the MIME type for .js files manually to application/javascript as
-	// http.DetectContentType is using https://mimesniff.spec.whatwg.org/ which
-	// will not recognize application/javascript for security reasons.
-	if strings.HasSuffix(path, ".js") {
-		w.Header().Add("Content-Type", "application/javascript; charset=utf-8")
+	// The MIME type comes from the extension: http.DetectContentType (https://mimesniff.spec.whatwg.org/) cannot
+	// recognize JavaScript, CSS or SVG, and browsers refuse a module script or a stylesheet with the wrong type.
+	if ct := mime.TypeByExtension(filepath.Ext(path)); ct != "" {
+		w.Header().Add("Content-Type", ct)
 	} else {
 		w.Header().Add("Content-Type", http.DetectContentType(bytes))
 	}

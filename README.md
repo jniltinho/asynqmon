@@ -49,7 +49,7 @@ docker pull hibiken/asynqmon[:tag]
 
 ### Building from source
 
-To build Asynqmon from source code, make sure you have Go installed ([download](https://golang.org/dl/)). Version `1.16` or higher is required. You also need [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed in order to build the frontend assets.
+To build Asynqmon from source code, make sure you have Go installed ([download](https://golang.org/dl/)). Version `1.16` or higher is required. You also need [Node.js](https://nodejs.org/) 22.18 or higher (with npm; the version Vite+ requires) in order to build the frontend assets.
 
 Download the source code of this repository and then run:
 
@@ -57,7 +57,8 @@ Download the source code of this repository and then run:
 make build
 ```
 
-The `asynqmon` binary should be created in the current directory.
+The `asynqmon` binary should be created in the current directory. `make build` builds the web UI first (`make assets`:
+`npm ci` and `npm run build` in `ui/`) into `ui/build`, which the Go binary embeds.
 
 ### Building Docker image locally
 
@@ -150,7 +151,7 @@ The metrics data is now available under `/metrics` for Prometheus server to scra
 Once the metrics data is collected by a Prometheus server, you can pass the address of the Prometheus server to asynqmon to query the time-series data.
 The address can be specified via `--prometheus-addr`. This enables the metrics view on the Web UI.
 
-<img width="1532" alt="Screen Shot 2021-12-19 at 4 37 19 PM" src="https://user-images.githubusercontent.com/10953044/146696852-25916465-07f0-4ed5-af31-18be02390bcb.png">
+![Metrics view](docs/screenshots/09-metrics.png)
 
 ### Examples
 
@@ -177,15 +178,58 @@ docker run --rm \
 
 Next, go to [localhost:8080](http://localhost:8080) and see Asynqmon dashboard:
 
-![Web UI Queues View](https://user-images.githubusercontent.com/11155743/114697016-07327f00-9d26-11eb-808c-0ac841dc888e.png)
+![Queues dashboard](docs/screenshots/01-dashboard.png)
 
-**Tasks view**
+**Queue view**: a tab per task state with its count, payloads and results in a viewer, row actions and bulk
+actions on a selection or on every task of the state, each destructive one behind a confirmation.
 
-![Web UI TasksView](https://user-images.githubusercontent.com/11155743/114697070-1f0a0300-9d26-11eb-855c-d3ec263865b7.png)
+![Queue view with a selection and a payload open](docs/screenshots/03-queue-archived-selection.png)
 
-**Settings and adaptive dark mode**
+**Task details**
 
-![Web UI Settings and adaptive dark mode](https://user-images.githubusercontent.com/11155743/114697149-3517c380-9d26-11eb-9f7a-ae2dd00aad5b.png)
+![Task details](docs/screenshots/05-task-completed.png)
+
+**Servers**, **Schedulers** and **Redis**
+
+![Servers](docs/screenshots/06-servers.png)
+
+![Scheduler entries](docs/screenshots/07-schedulers.png)
+
+![Redis info](docs/screenshots/08-redis.png)
+
+### Themes
+
+The web UI comes with 20 themes (Settings → Theme, kept in the browser), with square corners and an optional flat
+look: Default, Classic blue (XP), Classic gray (98), Graphite, Breeze, Violet, Aurora, Crystal, Cone, Matrix, Winamp,
+Pink Panther, High contrast and others, plus **Grafana** (dark, the Grafana 11 look) and **RabbitMQ** (the RabbitMQ
+management UI look). "Automatic" follows the system: Default on a light system, Grafana on a dark one. Every theme
+passes WCAG AA contrast (Classic blue, Crystal and High contrast AAA), checked by the UI unit tests.
+
+| Grafana | RabbitMQ |
+| --- | --- |
+| ![Grafana theme](docs/screenshots/12-theme-grafana.png) | ![RabbitMQ theme](docs/screenshots/14-theme-rabbitmq.png) |
+| ![Grafana theme, queue view](docs/screenshots/13-theme-grafana-queue.png) | ![RabbitMQ theme, queue view](docs/screenshots/15-theme-rabbitmq-queue.png) |
+
+| Classic blue (XP) | Graphite |
+| --- | --- |
+| ![Classic blue theme](docs/screenshots/11-theme-classic-blue.png) | ![Graphite theme, metrics](docs/screenshots/16-theme-graphite-metrics.png) |
+
+### Developing the UI
+
+The UI lives in `ui/` (Vue 3, [Vite+](https://viteplus.dev) and Tailwind CSS 4; the themes are CSS files of role
+tokens in `ui/src/themes/`, registered in `ui/src/themes/registry.js`, with the contrast matrix in
+`ui/src/themes/matrix.json`). With a throwaway Redis filled with sample tasks:
+
+```bash
+docker run -d --name asynqmon-redis -p 6379:6379 redis:7-alpine
+make seed &                       # asynq server, scheduler and producer with tasks in every state
+make api && ./api &               # the API on :8080 (no UI build needed)
+cd ui && npm ci && npm run dev    # the UI on http://localhost:3000, /api proxied to :8080
+```
+
+`make ui-check` formats, lints and runs the unit tests (formatting helpers and the theme contrast matrix).
+`npm run screenshots` (in `ui/`, `ASYNQMON_URL` pointing at a running asynqmon) retakes `docs/screenshots` at 2× and
+fails on any console error or failed request.
 
 ## Import as a Library
 

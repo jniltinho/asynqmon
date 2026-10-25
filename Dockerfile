@@ -3,22 +3,16 @@
 # Building a frontend.
 #
 
-FROM alpine:3.17 AS frontend
+FROM node:22-bookworm-slim AS frontend
 
 # Move to a working directory (/static).
 WORKDIR /static
 
-# https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
-ENV NODE_OPTIONS=--openssl-legacy-provider
-# Install npm (with latest nodejs) and yarn (globally, in silent mode).
-RUN apk add --update nodejs npm && \
-    npm i -g -s --unsafe-perm yarn
-
-# Copy only ./ui folder to the working directory.
+# Install the dependencies first (cached while package*.json do not change), then build into /static/build.
+COPY ui/package.json ui/package-lock.json ./
+RUN npm ci
 COPY ui .
-
-# Run yarn scripts (install & build).
-RUN yarn install && yarn build
+RUN npm run build
 
 #
 # Second stage: 
