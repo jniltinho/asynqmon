@@ -19,7 +19,7 @@ RUN npm run build
 # Building a backend.
 #
 
-FROM golang:1.18-alpine AS backend
+FROM golang:1.27-alpine AS backend
 
 # Move to a working directory (/build).
 WORKDIR /build

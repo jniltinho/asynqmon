@@ -49,7 +49,7 @@ docker pull hibiken/asynqmon[:tag]
 
 ### Building from source
 
-To build Asynqmon from source code, make sure you have Go installed ([download](https://golang.org/dl/)). Version `1.16` or higher is required. You also need [Node.js](https://nodejs.org/) 22.18 or higher (with npm; the version Vite+ requires) in order to build the frontend assets.
+To build Asynqmon from source code, make sure you have Go installed ([download](https://golang.org/dl/)). Version `1.27` or higher is required. You also need [Node.js](https://nodejs.org/) 22.18 or higher (with npm; the version Vite+ requires) in order to build the frontend assets.
 
 Download the source code of this repository and then run:
 
