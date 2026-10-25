@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-25
+
 ### Changed
 
 - (ui): The Redis INFO is a tab per section (Server, Clients, Memory…) with the field count of each, the section in the
