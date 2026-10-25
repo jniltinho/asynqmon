@@ -7,27 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-25
+
+The first release of this repository, which continues [hibiken/asynqmon](https://github.com/hibiken/asynqmon) on its
+own, for asynq 0.24.
+
 ### Changed
 
+- **Breaking**: the Go module is `github.com/jniltinho/asynqmon` (was `github.com/hibiken/asynqmon`); update the
+  import path. Go 1.27 or higher is required.
 - (ui): The web UI is rewritten in Vue 3 + Vite+ + Tailwind CSS 4 (from React + Material-UI), with the same pages,
   paths and API calls: a queue health overview, state tabs with counts, a payload / result viewer, bulk actions with
-  confirmations, loading and empty states, keyboard navigation and visible focus.
-- (ui): The 20 themes of the ad-manager panel (same files) with an optional flat look, among them Grafana and
-  RabbitMQ; every theme passes WCAG AA.
+  confirmations that name what they reach, sortable tables, loading, empty and error states, keyboard navigation and
+  visible focus.
+- (ui): The 20 themes of the [ad-manager](https://github.com/jniltinho/ad-manager) panel (the same files) with an
+  optional flat look, among them Grafana and RabbitMQ; every theme passes WCAG AA.
+- The Docker image is published on `ghcr.io/jniltinho/asynqmon`; the build uses npm instead of Yarn.
 
 ### Added
 
-- A release workflow: a `vX.Y.Z` tag builds `.tar.gz` archives for Linux, macOS and Windows (amd64 and arm64) and
-  publishes them in a GitHub release with `checksums.txt` and the version's notes; `asynqmon --version`.
+- `Options.Theme`: an application that embeds asynqmon can make the UI follow its own theme (served with the page,
+  no theme picker; `auto` follows the viewer's system).
 - A new logo and favicon: a queue mark (stacked tasks, the next one carried to a worker) drawn in each theme's
   header colors, with SVG, ICO and app icons generated from it.
-- `Options.Theme`: an embedding application can make the UI follow its own theme (served with the page, no theme
-  picker).
-- The build uses npm instead of Yarn (`make assets`, Dockerfile).
+- Release archives for Linux, macOS and Windows (amd64 and arm64) with `checksums.txt`; `asynqmon --version`.
+- `tools/seed` (`make seed`) fills a local Redis with sample tasks in every state.
+- CI: Go and web UI checks, a check that the committed `ui/build` matches the source, CodeQL.
 
 ### Fixed
 
 - Static files are served with the MIME type of their extension (stylesheets, module scripts and SVG images).
+- The redis-sentinel URL test expects the password in `SentinelPassword` (asynq 0.24).
 
 ## [0.7.0] - 2022-04-11
 
