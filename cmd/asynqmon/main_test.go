@@ -37,6 +37,20 @@ func TestParseFlags(t *testing.T) {
 				Args: []string{},
 			},
 		},
+		{
+			args: []string{"--version"},
+			want: &Config{
+				ShowVersion: true,
+
+				// Default values
+				Port:             8080,
+				RedisAddr:        "127.0.0.1:6379",
+				MaxPayloadLength: 200,
+				MaxResultLength:  200,
+
+				Args: []string{},
+			},
+		},
 	}
 
 	for _, tc := range tests {

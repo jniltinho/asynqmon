@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A release workflow: a `vX.Y.Z` tag builds `.tar.gz` archives for Linux, macOS and Windows (amd64 and arm64) and
+  publishes them in a GitHub release with `checksums.txt` and the version's notes; `asynqmon --version`.
 - A new logo and favicon: a queue mark (stacked tasks, the next one carried to a worker) drawn in each theme's
   header colors, with SVG, ICO and app icons generated from it.
 - `Options.Theme`: an embedding application can make the UI follow its own theme (served with the page, no theme

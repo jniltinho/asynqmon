@@ -20,6 +20,9 @@ import (
 	"github.com/rs/cors"
 )
 
+// version is the release, set at build time: go build -ldflags "-X main.version=v1.2.3".
+var version = "dev"
+
 // Config holds configurations for the program provided via the command line.
 type Config struct {
 	// Server port
@@ -42,6 +45,9 @@ type Config struct {
 	// Prometheus related configs
 	EnableMetricsExporter bool
 	PrometheusServerAddr  string
+
+	// ShowVersion prints the version and exits (--version)
+	ShowVersion bool
 
 	// Args are the positional (non-flag) command line arguments
 	Args []string
@@ -72,6 +78,7 @@ func parseFlags(progname string, args []string) (cfg *Config, output string, err
 	flags.BoolVar(&conf.EnableMetricsExporter, "enable-metrics-exporter", getEnvOrDefaultBool("ENABLE_METRICS_EXPORTER", false), "enable prometheus metrics exporter to expose queue metrics")
 	flags.StringVar(&conf.PrometheusServerAddr, "prometheus-addr", getEnvDefaultString("PROMETHEUS_ADDR", ""), "address of prometheus server to query time series")
 	flags.BoolVar(&conf.ReadOnly, "read-only", getEnvOrDefaultBool("READ_ONLY", false), "restrict to read-only mode")
+	flags.BoolVar(&conf.ShowVersion, "version", false, "print the version and exit")
 
 	err = flags.Parse(args)
 	if err != nil {
@@ -142,6 +149,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if cfg.ShowVersion {
+		fmt.Println("asynqmon", version)
+		return
+	}
+
 	redisConnOpt, err := makeRedisConnOpt(cfg)
 	if err != nil {
 		log.Fatal(err)
@@ -183,7 +195,7 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 	}
 
-	fmt.Printf("Asynq Monitoring WebUI server is listening on port %d\n", cfg.Port)
+	fmt.Printf("Asynq Monitoring WebUI server %s is listening on port %d\n", version, cfg.Port)
 	log.Fatal(srv.ListenAndServe())
 }
 

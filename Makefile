@@ -1,5 +1,8 @@
 .PHONY: api assets build docker ui-check seed
 
+# the version printed by `asynqmon --version`: the git tag (or commit) of the checkout
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+
 # Build the web UI (Vue 3 + Vite+) into ui/build, which the Go binary embeds.
 assets:
 	@if [ ! -d ui/node_modules ]; then cd ./ui && npm ci; fi
@@ -21,7 +24,7 @@ api:
 
 # Build a release binary.
 build: assets
-	go build -o asynqmon ./cmd/asynqmon
+	go build -trimpath -ldflags "-s -w -X main.version=$(VERSION)" -o asynqmon ./cmd/asynqmon
 
 # Build image and run Asynqmon server (with default settings).
 docker:

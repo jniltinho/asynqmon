@@ -44,7 +44,13 @@ docker pull ghcr.io/jniltinho/asynqmon          # latest (master)
 docker pull ghcr.io/jniltinho/asynqmon:0.8      # a release line, once tagged
 ```
 
-**Release binary**: download it for your system from the [releases page](https://github.com/jniltinho/asynqmon/releases).
+**Release binary**: download `asynqmon_<version>_<os>_<arch>.tar.gz` for Linux, macOS or Windows (amd64 or arm64)
+from the [releases page](https://github.com/jniltinho/asynqmon/releases), check it against `checksums.txt`, and run
+the `asynqmon` binary inside (`asynqmon --version` prints its version):
+
+```bash
+tar -xzf asynqmon_v0.8.0_linux_amd64.tar.gz && ./asynqmon_v0.8.0_linux_amd64/asynqmon --version
+```
 
 **With Go** (1.27 or higher; the web UI is already built into the module):
 
@@ -268,6 +274,17 @@ cd ui && npm ci && npm run dev    # the UI on http://localhost:3000, /api proxie
 
 CI runs the Go and UI checks, verifies that the committed `ui/build` matches the source, runs CodeQL and builds the
 Docker image (pushed to `ghcr.io` from `master` and `v*` tags).
+
+**Releasing**: rename `## [Unreleased]` in `CHANGELOG.md` to `## [X.Y.Z] - YYYY-MM-DD` (with a new empty
+`## [Unreleased]` above it), merge, then tag and push:
+
+```bash
+git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z
+```
+
+The release workflow runs the CI, builds the `.tar.gz` for Linux, macOS and Windows on amd64 and arm64 (binary,
+LICENSE, README, CHANGELOG), and publishes a GitHub release with `checksums.txt` and that version's CHANGELOG notes;
+the Docker image gets the `X.Y.Z` and `X.Y` tags.
 
 ## License
 
