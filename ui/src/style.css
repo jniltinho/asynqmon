@@ -1214,7 +1214,13 @@ input[type='checkbox']:indeterminate::after {
 .chart-h {
   height: clamp(200px, calc(var(--view-h) * 0.25), 440px);
 }
-/* every card head is as tall as one with a control in it (a select, a filter field), so heads line up across cards */
+/* every card head has the same, compact height: a control in it (a select, a filter field) is a 24px one, and a head
+   with or without one is that control plus 4px above and below plus the bottom line */
 .card-h {
-  min-height: calc(var(--control-h) + 0.75rem + 1px); /* the control, the padding and the bottom line */
+  --card-h-control: 24px;
+  padding-block: 4px;
+  min-height: calc(var(--card-h-control) + 8px + 1px);
+}
+.card-h .inp {
+  height: var(--card-h-control);
 }

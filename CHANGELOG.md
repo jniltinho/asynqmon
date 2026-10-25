@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inside; the charts follow the window height.
 - (ui): Cards have a shadow; the KPI cards lift on hover and their value pulses when a refresh changes it
   (none of it with reduced motion; no depth in the flat look).
-- (ui): Every card head has the same height, with or without a control (a select, a filter field) in it.
+- (ui): Every card head has the same compact height, with or without a control (a select, a filter field) in it.
 - (ui): The line charts are monotone (no overshoot between days), with a guide line and a smoother tooltip on hover.
 
 ### Fixed
