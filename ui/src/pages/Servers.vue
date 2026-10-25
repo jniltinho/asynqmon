@@ -45,7 +45,7 @@ const queuesOf = (s) => Object.entries(s.queue_priorities || {}).sort((a, b) => 
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-5">
+  <div v-else class="page">
     <ErrorNote v-if="error" what="the servers" :error="error" :stale="servers.length > 0" @retry="refresh" />
     <section v-if="!error || servers.length" class="grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Totals">
       <Stat label="Servers" :value="num(servers.length)" :note="`${servers.filter((s) => s.status === 'active').length} active`" />
@@ -59,7 +59,7 @@ const queuesOf = (s) => Object.entries(s.queue_priorities || {}).sort((a, b) => 
       <Stat label="Hosts" :value="num(new Set(servers.map((s) => s.host)).size)" tone="muted" />
     </section>
 
-    <section v-if="!error || servers.length" class="card">
+    <section v-if="!error || servers.length" class="card fill">
       <h2 class="card-h">Servers</h2>
       <Empty
         v-if="!servers.length"
@@ -67,7 +67,7 @@ const queuesOf = (s) => Object.entries(s.queue_priorities || {}).sort((a, b) => 
         title="No servers running"
         hint="Servers show up here while an asynq.Server is connected to this Redis."
       />
-      <div v-else class="overflow-x-auto">
+      <div v-else class="scroll">
         <table class="grid-t border-0">
           <thead>
             <tr>
@@ -123,7 +123,7 @@ const queuesOf = (s) => Object.entries(s.queue_priorities || {}).sort((a, b) => 
                 <td></td>
                 <td colspan="5" class="py-2">
                   <p v-if="!s.active_workers.length" class="text-fg-muted">No task is being processed.</p>
-                  <table v-else class="grid-t">
+                  <table v-else class="grid-t nested">
                     <thead>
                       <tr>
                         <th>Task</th>

@@ -86,7 +86,8 @@ const NAMED_ATTR = new RegExp(`\\b(?:style|fill|stroke|color|stop-color)\\s*=\\s
 // a string that is just a named color (a constant later bound to :style / fill); attr="…" is NAMED_ATTR's
 const NAMED_STRING = new RegExp(`(?<=(?<![\\w-]=)['"\`])(${NAMES})(?=['"\`])`, 'g')
 // a radius declaration inside a style attribute or a JS style object (border-radius, borderStartStartRadius…)
-const RADIUS_DECL = /\b([a-z-]*radius|[a-z]+Radius)\s*:\s*['"]?([^;"'`}\n,]+)/gi
+// (asynqmon: Chart.js point sizes — pointRadius, pointHoverRadius, pointHitRadius — are not corners)
+const RADIUS_DECL = /\b(?!point)([a-z-]*radius|[a-z]+Radius)\s*:\s*['"]?([^;"'`}\n,]+)/gi
 const PALETTE_VAR = /var\(--color-cn[a-z-]*\)/g
 const ENCODED = /%23[0-9a-fA-F]{3,8}\b/g // a color inside a data-URL
 const RADIUS = /(?:^|[\s"'`:!])(rounded(?:-[a-z]+)?(?:-(?:sm|md|lg|xl|2xl|3xl|4xl|full|\[[^\]]+\]|\([^)]+\)))?)(?=[\s"'`]|$)/g

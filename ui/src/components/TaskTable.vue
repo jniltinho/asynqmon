@@ -197,7 +197,8 @@ const to = computed(() => Math.min(total.value, page.value * settings.pageSize))
 </script>
 
 <template>
-  <div>
+  <!-- a column that fills the queue card: toolbar, the task list (it scrolls), the pager -->
+  <div class="flex grow basis-0 flex-col">
     <div class="flex flex-wrap items-center gap-(--toolbar-gap) border-b border-line bg-surface-2 px-3 py-2">
       <label v-if="state === 'aggregating'" class="flex items-center gap-2">
         <span class="text-[11px] font-semibold text-fg-muted uppercase">Group</span>
@@ -236,8 +237,8 @@ const to = computed(() => Math.min(total.value, page.value * settings.pageSize))
       :title="`No ${state} tasks`"
       :hint="state === 'aggregating' && !groups.length ? 'No group is aggregating tasks in this queue.' : 'This list refreshes on its own.'"
     />
-    <!-- its own scroll box, so the sticky column heads stay in view on a long page -->
-    <div v-else-if="tasks.length && !switching" class="max-h-[70vh] overflow-auto">
+    <!-- its own scroll box, so the sticky column heads stay in view -->
+    <div v-else-if="tasks.length && !switching" class="scroll h-0 min-h-40 grow basis-0">
       <table class="grid-t border-0">
         <thead>
           <tr>

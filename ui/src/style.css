@@ -1097,3 +1097,130 @@ input[type='checkbox']:indeterminate::after {
   height: 2px;
   background: var(--color-on-action);
 }
+/* cards stand off the page: the theme's card relief plus its hover shadow, at rest (none in the flat look) */
+.card {
+  box-shadow: var(--shadow-card), var(--shadow-card-hover);
+}
+/* the KPI cards (Stat.vue) lift on hover: 2px up, the theme's hover line and a deeper shadow (the tooltip's) */
+.card-lift {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-card-hover-line);
+  box-shadow: var(--shadow-card), var(--shadow-card-hover), var(--shadow-tip);
+}
+:root[data-flat='true'] .card-lift:hover {
+  box-shadow: none; /* the flat look has no depth: the lift and the line only */
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-lift {
+    transition: none;
+  }
+  .card-lift:hover {
+    transform: none;
+  }
+}
+/* KPI card details on hover: the stripe thickens and the background icon shows more */
+.card-lift .stat-stripe {
+  transform-origin: top;
+  transition: transform 0.15s ease;
+}
+.card-lift:hover .stat-stripe {
+  transform: scaleY(1.75);
+}
+.card-lift .stat-icon {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.card-lift:hover .stat-icon {
+  opacity: 0.3;
+  transform: scale(1.08);
+}
+/* a KPI value changed on a refresh: a short pulse */
+.stat-bump {
+  animation: stat-bump 0.6s ease;
+}
+@keyframes stat-bump {
+  30% {
+    transform: scale(1.08);
+  }
+}
+.stat-bump {
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-lift .stat-stripe,
+  .card-lift .stat-icon {
+    transition: none;
+  }
+  .card-lift:hover .stat-stripe,
+  .card-lift:hover .stat-icon {
+    transform: none;
+  }
+  .stat-bump {
+    animation: none;
+  }
+}
+/* (the bases are 0px, never 0%: a percentage of an indefinite height falls back to the content's, the whole list)
+   pages that fit the window (no page scroll bar): a column as tall as <main>; its .fill part takes the rest of the
+   height and scrolls inside its .scroll element. The .fill never gets shorter than its content's minimum (controls
+   that wrap included) with at least 160px of scroll area, so on a short or narrow window <main> scrolls instead. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  min-height: 0;
+}
+.page > * {
+  flex-shrink: 0;
+}
+.page > .fill {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+}
+.fill > * {
+  flex-shrink: 0;
+}
+.fill > .scroll,
+.fill > .grow {
+  flex: 1 1 0;
+}
+.fill > .scroll {
+  /* height 0 + grow: it takes the room left, and counts only its 160px minimum (not its rows) in the card's size */
+  height: 0;
+  min-height: 160px;
+}
+.fill > .grow {
+  display: flex;
+  flex-direction: column;
+}
+.scroll {
+  overflow: auto;
+  /* keyboard focus never lands under a sticky table head: the head's height plus room for the ring */
+  scroll-padding-block-start: 44px;
+}
+/* a table inside a table row (a server's workers) keeps its head in place: only the outer head sticks */
+.grid-t.nested th {
+  position: static;
+}
+/* the charts' height follows the window's (FullHD, QHD and 4K alike: --view-h is the height after the zoom) */
+.chart-h {
+  height: clamp(200px, calc(var(--view-h) * 0.25), 440px);
+}
+/* every card head has the same, compact height: a control in it (a select, a filter field) is a 24px one, and a head
+   with or without one is that control plus 4px above and below plus the bottom line */
+.card-h {
+  --card-h-control: 24px;
+  padding-block: 4px;
+  min-height: calc(var(--card-h-control) + 8px + 1px);
+}
+.card-h .inp {
+  height: var(--card-h-control);
+}

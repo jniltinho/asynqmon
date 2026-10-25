@@ -119,7 +119,7 @@ async function remove(q) {
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-5">
+  <div v-else class="page">
     <ErrorNote v-if="error" what="the queues" :error="error" :stale="queues.length > 0" @retry="refresh" />
 
     <section v-if="!error || queues.length" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" aria-label="Totals">
@@ -132,14 +132,16 @@ async function remove(q) {
         label="Processed today"
         :value="num(sum('processed'))"
         :tone="sum('failed') ? 'err' : 'ok'"
-        :note="`${num(sum('failed'))} failed · ${percent(sum('failed'), sum('processed'))}`"
+        :note="
+          sum('processed') ? `${num(sum('failed'))} failed · ${percent(sum('failed'), sum('processed'))} error rate` : 'nothing yet today'
+        "
       />
     </section>
 
     <div v-if="queues.length" class="grid gap-5 lg:grid-cols-2">
-      <section class="card">
+      <section class="card flex flex-col">
         <h2 class="card-h">Queue size by state</h2>
-        <div class="p-3" :style="{ height: `${Math.max(220, queues.length * 34 + 90)}px` }">
+        <div class="chart-h p-3">
           <Chart
             type="bar"
             horizontal
@@ -157,7 +159,7 @@ async function remove(q) {
             <option v-for="[v, l] in RANGES" :key="v" :value="v">{{ l }}</option>
           </select>
         </h2>
-        <div class="min-h-[220px] flex-1 p-3">
+        <div class="chart-h p-3">
           <Chart
             :type="settings.dailyStats === 'today' ? 'bar' : 'line'"
             :stacked="settings.dailyStats === 'today'"
@@ -170,7 +172,7 @@ async function remove(q) {
       </section>
     </div>
 
-    <section v-if="!error || queues.length" class="card">
+    <section v-if="!error || queues.length" class="card fill">
       <h2 class="card-h justify-between">
         Queues
         <label class="relative w-56 font-normal normal-case">
@@ -180,7 +182,7 @@ async function remove(q) {
         </label>
       </h2>
       <Empty v-if="!queues.length" :icon="Inbox" title="No queues yet" hint="Queues appear here once a task is enqueued with asynq." />
-      <div v-else class="overflow-x-auto">
+      <div v-else class="scroll">
         <table class="grid-t border-0">
           <thead>
             <tr>

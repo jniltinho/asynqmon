@@ -50,9 +50,9 @@ const close = () => (dlg.value?.close(), (history.value = null), seq++)
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-5">
+  <div v-else class="page">
     <ErrorNote v-if="error" what="the scheduler entries" :error="error" :stale="entries.length > 0" @retry="refresh" />
-    <section v-if="!error || entries.length" class="card">
+    <section v-if="!error || entries.length" class="card fill">
       <h2 class="card-h">Scheduler entries</h2>
       <Empty
         v-if="!entries.length"
@@ -60,7 +60,7 @@ const close = () => (dlg.value?.close(), (history.value = null), seq++)
         title="No periodic tasks"
         hint="Entries show up here while an asynq.Scheduler with registered tasks is running."
       />
-      <div v-else class="overflow-x-auto">
+      <div v-else class="scroll">
         <table class="grid-t border-0">
           <thead>
             <tr>
