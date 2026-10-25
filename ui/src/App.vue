@@ -41,7 +41,7 @@ const scrollTop = () => document.querySelector('main')?.scrollTo(0, 0)
   <PanelDialogs />
   <Toasts />
   <div
-    class="mx-auto flex h-(--view-h) w-full max-w-[1840px] flex-col overflow-hidden bg-surface text-fg shadow-(--shadow-app) outline outline-line sm:my-4 sm:h-[calc(var(--view-h)-32px)] sm:w-[calc(100%-32px)]"
+    class="mx-auto flex h-(--view-h) w-full max-w-[1840px] min-[2400px]:max-w-[2240px] flex-col overflow-hidden bg-surface text-fg shadow-(--shadow-app) outline outline-line sm:my-4 sm:h-[calc(var(--view-h)-32px)] sm:w-[calc(100%-32px)]"
   >
     <header class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-header bg-(image:--bg-header) px-5 py-3">
       <router-link to="/" class="shrink-0" aria-label="Asynqmon home"><Logo /></router-link>

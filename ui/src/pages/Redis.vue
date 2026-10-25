@@ -1,8 +1,9 @@
 <script setup>
-// The Redis server (or cluster): the key numbers, the queue locations of a cluster and the full INFO, grouped by
-// section with a filter.
-import { computed, ref } from 'vue'
-import { Search } from 'lucide-vue-next'
+// The Redis server (or cluster): the key numbers, the queue locations of a cluster and the full INFO, a tab per
+// section (Server, Clients, Memory…) with a filter over all of them.
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Search, X } from 'lucide-vue-next'
 import { getRedisInfo } from '../api'
 import { usePoll } from '../poll'
 import { duration, num } from '../util'
@@ -18,7 +19,6 @@ const ratio = computed(() => Number(i.value.mem_fragmentation_ratio || 0))
 const lastSave = computed(() => (i.value.rdb_last_save_time ? new Date(i.value.rdb_last_save_time * 1000).toLocaleString() : '—'))
 
 // raw INFO → sections of [key, value]
-const filter = ref('')
 const sections = computed(() => {
   const out = []
   for (const line of (data.value?.raw_info || '').split(/\r?\n/)) {
@@ -29,16 +29,70 @@ const sections = computed(() => {
       out.at(-1).rows.push([line.slice(0, line.indexOf(':')), line.slice(line.indexOf(':') + 1)])
     }
   }
-  const f = filter.value.trim().toLowerCase()
   return out
-    .map((s) => ({ ...s, rows: f ? s.rows.filter(([k, v]) => k.includes(f) || v.toLowerCase().includes(f)) : s.rows }))
-    .filter((s) => s.rows.length)
+})
+
+// the filter applies to every section: each tab shows how many of its fields match
+const filter = ref('')
+const term = computed(() => filter.value.trim().toLowerCase())
+const shown = computed(() =>
+  sections.value.map((s) => ({
+    ...s,
+    id: s.name.toLowerCase(),
+    rows: term.value ? s.rows.filter(([k, v]) => k.toLowerCase().includes(term.value) || v.toLowerCase().includes(term.value)) : s.rows,
+  })),
+)
+
+// the current section lives in the URL (?section=memory), so a link opens it
+const route = useRoute()
+const router = useRouter()
+const current = computed(() => shown.value.find((s) => s.id === route.query.section) || shown.value[0])
+const pick = (id) => router.replace({ query: { ...route.query, section: id } })
+// from the "Found in" links: the focus follows to the tab picked (the link it was on goes away)
+const focusTab = (id) => requestAnimationFrame(() => document.getElementById(`info-tab-${id}`)?.focus())
+function jump(id) {
+  pick(id)
+  focusTab(id)
+}
+// the × clears the filter and gives the focus back to the field (the button goes away)
+const field = ref(null)
+function clear() {
+  filter.value = ''
+  field.value?.focus()
+}
+const elsewhere = computed(() => shown.value.filter((s) => s !== current.value && s.rows.length))
+
+// arrow keys, Home and End move between the tabs (the WAI-ARIA tabs pattern)
+function key(e) {
+  const ids = shown.value.map((s) => s.id)
+  const i = ids.indexOf(current.value?.id)
+  const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: ids.length - 1 }[e.key]
+  if (next === undefined) return
+  e.preventDefault()
+  const id = ids[(next + ids.length) % ids.length]
+  pick(id)
+  focusTab(id)
+}
+
+// another section starts at its top (the panel is the same element, so it would keep the last scroll position)
+const panel = ref(null)
+watch(
+  () => current.value?.id,
+  () => panel.value && (panel.value.scrollTop = 0),
+)
+
+// a long section in two columns: the rows split in halves, read top to bottom
+const columns = computed(() => {
+  const rows = current.value?.rows || []
+  if (rows.length < 16) return [rows]
+  const half = Math.ceil(rows.length / 2)
+  return [rows.slice(0, half), rows.slice(half)]
 })
 </script>
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-5">
+  <div v-else class="page">
     <ErrorNote v-if="error" what="the Redis INFO" :error="error" :stale="!!data" @retry="refresh" />
     <template v-if="data">
       <!-- a cluster replies CLUSTER INFO, not INFO: its own cards -->
@@ -79,46 +133,95 @@ const sections = computed(() => {
         <Stat label="Unsaved changes" :value="num(Number(i.rdb_changes_since_last_save || 0))" tone="muted" :note="`saved ${lastSave}`" />
       </section>
 
+      <!-- a cluster: where each queue lives and the nodes, side by side, each scrolling inside (the page does not) -->
       <section v-if="data.cluster" class="card">
-        <h2 class="card-h">Queue locations</h2>
-        <table class="grid-t border-0">
-          <thead>
-            <tr>
-              <th>Queue</th>
-              <th>Key slot</th>
-              <th>Nodes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="l in data.queue_locations || []" :key="l.queue">
-              <td>{{ l.queue }}</td>
-              <td class="tabular-nums">{{ l.keyslot }}</td>
-              <td class="font-mono">{{ l.nodes.join(', ') }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <pre class="code m-3 max-h-64 overflow-auto">{{ data.raw_cluster_nodes }}</pre>
+        <h2 class="card-h">Queue locations and nodes</h2>
+        <div class="grid gap-3 p-3 lg:grid-cols-2">
+          <div class="scroll max-h-48 border border-line" tabindex="0" role="region" aria-label="Queue locations">
+            <table class="grid-t border-0">
+              <thead>
+                <tr>
+                  <th>Queue</th>
+                  <th>Key slot</th>
+                  <th>Nodes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="l in data.queue_locations || []" :key="l.queue">
+                  <td>{{ l.queue }}</td>
+                  <td class="tabular-nums">{{ l.keyslot }}</td>
+                  <td class="font-mono">{{ l.nodes.join(', ') }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <pre class="code m-0 max-h-48 overflow-auto" tabindex="0" aria-label="CLUSTER NODES">{{ data.raw_cluster_nodes }}</pre>
+        </div>
       </section>
 
-      <section class="card">
+      <section class="card fill">
         <h2 class="card-h justify-between">
           {{ data.cluster ? 'CLUSTER INFO' : 'INFO' }} · {{ data.address }}
           <label class="relative w-56 font-normal normal-case">
-            <span class="sr-only">Filter INFO</span>
+            <span class="sr-only">Filter every section by key or value</span>
             <Search :size="13" class="absolute top-1/2 left-2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
-            <input v-model="filter" class="inp pl-7" placeholder="Filter keys or values…" />
+            <input ref="field" v-model="filter" class="inp pr-7 pl-7" placeholder="Filter keys or values…" @keydown.esc="filter = ''" />
+            <button
+              v-if="filter"
+              type="button"
+              class="absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer p-1 text-fg-muted hover:text-fg"
+              aria-label="Clear the filter"
+              @click="clear"
+            >
+              <X :size="12" aria-hidden="true" />
+            </button>
           </label>
         </h2>
-        <p v-if="!sections.length" class="px-3 py-4 text-fg-muted">Nothing matches “{{ filter }}”.</p>
-        <div class="grid gap-x-5 p-3 md:grid-cols-2 2xl:grid-cols-3">
-          <div v-for="s in sections" :key="s.name" class="mb-4 break-inside-avoid">
-            <h3 class="mb-1 text-[12px] font-semibold text-fg-strong">{{ s.name }}</h3>
-            <dl class="kv border border-line">
-              <template v-for="[k, v] in s.rows" :key="k">
-                <dt class="font-mono font-normal!">{{ k }}</dt>
-                <dd class="font-mono break-all">{{ v }}</dd>
+        <div class="subtabs mb-0! px-2 pt-2" role="tablist" aria-label="INFO section" @keydown="key">
+          <button
+            v-for="s in shown"
+            :id="`info-tab-${s.id}`"
+            :key="s.id"
+            role="tab"
+            class="subtab"
+            :class="{ on: s === current, 'font-normal!': term && !s.rows.length && s !== current }"
+            :aria-selected="s === current"
+            :tabindex="s === current ? 0 : -1"
+            aria-controls="info-panel"
+            @click="pick(s.id)"
+          >
+            {{ s.name }}
+            <span class="font-normal tabular-nums">{{ s.rows.length }}</span>
+          </button>
+        </div>
+        <div
+          id="info-panel"
+          ref="panel"
+          class="scroll p-3"
+          role="tabpanel"
+          tabindex="0"
+          :aria-labelledby="current && `info-tab-${current.id}`"
+        >
+          <template v-if="current?.rows.length">
+            <div class="grid gap-x-5 gap-y-3" :class="columns.length > 1 ? 'xl:grid-cols-2' : ''">
+              <dl v-for="(col, n) in columns" :key="n" class="kv self-start border border-line">
+                <template v-for="[k, v] in col" :key="k">
+                  <dt class="font-mono font-normal!">{{ k }}</dt>
+                  <dd class="font-mono break-all">{{ v }}</dd>
+                </template>
+              </dl>
+            </div>
+          </template>
+          <div v-else class="px-1 py-4 text-fg-muted">
+            <template v-if="term">
+              No field of {{ current?.name }} matches “{{ filter }}”.
+              <template v-if="elsewhere.length">
+                Found in:
+                <button v-for="s in elsewhere" :key="s.id" class="act" @click="jump(s.id)">{{ s.name }} ({{ s.rows.length }})</button>
               </template>
-            </dl>
+            </template>
+            <template v-else-if="current">{{ current.name }} has no fields on this server.</template>
+            <template v-else>Redis returned no INFO.</template>
           </div>
         </div>
       </section>

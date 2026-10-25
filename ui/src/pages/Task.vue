@@ -90,7 +90,7 @@ const back = () => (history.state?.back ? router.back() : router.push(`/queues/$
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-4">
+  <div v-else class="page">
     <div class="flex flex-wrap items-center gap-3">
       <button class="btn-ghost" @click="back"><ArrowLeft :size="13" aria-hidden="true" /> Back</button>
       <nav aria-label="Breadcrumb" class="flex items-center gap-1 text-[13px]">
@@ -115,33 +115,35 @@ const back = () => (history.state?.back ? router.back() : router.push(`/queues/$
     <section v-if="notFound" class="card">
       <Empty :icon="SearchX" title="Task not found" hint="It may have been processed, deleted or expired." />
     </section>
-    <div v-else-if="task" class="grid gap-4 lg:grid-cols-2">
-      <section class="card">
-        <h2 class="card-h">
-          <span class="dot" :class="`st-${task.state}`" aria-hidden="true"></span>
-          Task · {{ task.state }}
-        </h2>
-        <dl class="kv">
-          <template v-for="[k, v, mono, cls] in fields" :key="k">
-            <dt>{{ k }}</dt>
-            <dd :class="[mono ? 'font-mono' : '', cls]">
-              {{ v }}
-              <button v-if="k === 'ID'" class="act ml-1" :aria-label="copied ? 'Copied' : 'Copy the task ID'" @click="copyId">
-                <component :is="copied ? Check : Copy" :size="12" aria-hidden="true" />
-              </button>
-            </dd>
-          </template>
-        </dl>
-      </section>
-      <div class="space-y-4">
+    <div v-else-if="task" class="fill">
+      <div class="scroll -m-3 grid content-start gap-4 p-3 lg:grid-cols-2">
         <section class="card">
-          <h2 class="card-h">Payload</h2>
-          <pre class="code m-3 max-h-[50vh] overflow-auto" v-html="highlight(pretty(task.payload)) || '(empty)'"></pre>
+          <h2 class="card-h">
+            <span class="dot" :class="`st-${task.state}`" aria-hidden="true"></span>
+            Task · {{ task.state }}
+          </h2>
+          <dl class="kv">
+            <template v-for="[k, v, mono, cls] in fields" :key="k">
+              <dt>{{ k }}</dt>
+              <dd :class="[mono ? 'font-mono' : '', cls]">
+                {{ v }}
+                <button v-if="k === 'ID'" class="act ml-1" :aria-label="copied ? 'Copied' : 'Copy the task ID'" @click="copyId">
+                  <component :is="copied ? Check : Copy" :size="12" aria-hidden="true" />
+                </button>
+              </dd>
+            </template>
+          </dl>
         </section>
-        <section v-if="task.state === 'completed'" class="card">
-          <h2 class="card-h">Result</h2>
-          <pre class="code m-3 max-h-[40vh] overflow-auto" v-html="highlight(pretty(task.result)) || '(empty)'"></pre>
-        </section>
+        <div class="space-y-4">
+          <section class="card">
+            <h2 class="card-h">Payload</h2>
+            <pre class="code m-3 max-h-[50vh] overflow-auto" v-html="highlight(pretty(task.payload)) || '(empty)'"></pre>
+          </section>
+          <section v-if="task.state === 'completed'" class="card">
+            <h2 class="card-h">Result</h2>
+            <pre class="code m-3 max-h-[40vh] overflow-auto" v-html="highlight(pretty(task.result)) || '(empty)'"></pre>
+          </section>
+        </div>
       </div>
     </div>
   </div>

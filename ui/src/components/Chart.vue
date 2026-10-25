@@ -48,6 +48,9 @@ function paint(role, alpha = 1) {
   return `#${hex(r)}${hex(g)}${hex(b)}${hex(a * alpha)}`
 }
 
+// the system asks for less motion: no hover transition either (CSS cannot reach a canvas)
+const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+
 const fmtTime = (sec, long) =>
   new Date(sec * 1000).toLocaleString([], long ? { dateStyle: 'medium', timeStyle: 'medium' } : { hour: '2-digit', minute: '2-digit' })
 
@@ -58,9 +61,14 @@ function datasets() {
     borderColor: paint(s.color),
     backgroundColor: props.type === 'line' ? paint(s.color, props.area ? 0.14 : 1) : paint(s.color, 0.9),
     fill: props.area,
-    tension: 0.25,
+    // monotone: smooth, but never above or below the data between two points (a plain curve overshoots)
+    cubicInterpolationMode: 'monotone',
     borderWidth: props.type === 'line' ? 2 : 0,
     pointRadius: 0,
+    pointHoverRadius: 4,
+    pointHoverBorderWidth: 2,
+    pointHoverBackgroundColor: paint('surface'),
+    pointHitRadius: 12,
     maxBarThickness: 34,
   }))
 }
@@ -79,8 +87,13 @@ function build() {
       indexAxis: props.horizontal ? 'y' : 'x',
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
-      interaction: { mode: 'index', intersect: false },
+      // no animation on load or on a refresh, but the hover (point, tooltip) moves smoothly instead of jumping
+      // reduced motion: no animation at all (duration 0 still leaves Chart.js' 200ms fades, the tooltip's included)
+      animation: still() ? false : { duration: 0 },
+      transitions: { active: { animation: { duration: still() ? 0 : 120 } } },
+      // every series at the nearest category (or time) along the category axis, wherever the pointer is above it
+      interaction: { mode: 'index', intersect: false, axis: props.horizontal ? 'y' : 'x' },
+      hover: { mode: 'index', intersect: false, axis: props.horizontal ? 'y' : 'x' },
       font,
       scales: {
         [cat]: {
@@ -106,6 +119,9 @@ function build() {
           labels: { color: text, font, boxWidth: 10, boxHeight: 10, padding: 12 },
         },
         tooltip: {
+          animation: { duration: still() ? 0 : 120 },
+          position: 'nearest',
+          caretPadding: 8,
           backgroundColor: paint('tooltip'),
           titleColor: paint('on-tooltip'),
           bodyColor: paint('on-tooltip'),
@@ -122,8 +138,29 @@ function build() {
         },
       },
     },
+    plugins: [guide(text)],
   })
 }
+
+// a line chart's guide: a vertical line at the point under the pointer, so the day (or time) read is plain
+const guide = (color) => ({
+  id: 'guide',
+  afterDatasetsDraw(c) {
+    const active = c.tooltip?.getActiveElements?.()
+    if (props.type !== 'line' || !active?.length) return
+    const x = active[0].element.x
+    const { top, bottom } = c.chartArea
+    c.ctx.save()
+    c.ctx.strokeStyle = color
+    c.ctx.lineWidth = 1
+    c.ctx.setLineDash([4, 3])
+    c.ctx.beginPath()
+    c.ctx.moveTo(x, top)
+    c.ctx.lineTo(x, bottom)
+    c.ctx.stroke()
+    c.ctx.restore()
+  },
+})
 
 const observer = new MutationObserver(build)
 onMounted(() => {
@@ -168,23 +205,26 @@ onBeforeUnmount(() => {
   <div class="relative h-full w-full">
     <span ref="probe" class="hidden"></span>
     <canvas ref="canvas" role="img" :aria-label="label"></canvas>
-    <table class="sr-only">
-      <caption>
-        {{
-          label
-        }}
-      </caption>
-      <thead>
-        <tr>
-          <th v-for="(h, i) in table.head" :key="i" scope="col">{{ h }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(r, i) in table.rows" :key="i">
-          <th scope="row">{{ r[0] }}</th>
-          <td v-for="(c, j) in r.slice(1)" :key="j">{{ c }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- hidden in a wrapper: a caption sits outside the table box, so an sr-only table would still show it -->
+    <div class="sr-only">
+      <table>
+        <caption>
+          {{
+            label
+          }}
+        </caption>
+        <thead>
+          <tr>
+            <th v-for="(h, i) in table.head" :key="i" scope="col">{{ h }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(r, i) in table.rows" :key="i">
+            <th scope="row">{{ r[0] }}</th>
+            <td v-for="(c, j) in r.slice(1)" :key="j">{{ c }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>

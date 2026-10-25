@@ -58,7 +58,7 @@ async function togglePause() {
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-4">
+  <div v-else class="page">
     <ErrorNote v-if="error" what="the queue" :error="error" :stale="queues.length > 0" @retry="refresh" />
     <div class="flex flex-wrap items-center gap-3">
       <nav aria-label="Breadcrumb" class="flex items-center gap-1 text-[13px]">
@@ -104,7 +104,7 @@ async function togglePause() {
         <div class="border-t border-line px-3 py-2"><StateBar :queue="q" /></div>
       </section>
 
-      <section class="card">
+      <section class="card fill">
         <div class="subtabs mb-0! px-2 pt-2" role="tablist" aria-label="Task state" @keydown="key">
           <button
             v-for="s in STATES"
@@ -123,7 +123,7 @@ async function togglePause() {
             <span class="font-normal tabular-nums">{{ num(q[s]) }}</span>
           </button>
         </div>
-        <div id="tasks" role="tabpanel" :aria-labelledby="`tab-${state}`">
+        <div id="tasks" class="grow" role="tabpanel" :aria-labelledby="`tab-${state}`">
           <TaskTable :key="`${qname}/${state}`" :qname="qname" :state="state" :count="q[state]" @changed="refresh" />
         </div>
       </section>

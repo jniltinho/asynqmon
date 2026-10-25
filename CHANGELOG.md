@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- (ui): The Redis INFO is a tab per section (Server, Clients, Memory…) with the field count of each, the section in the
+  URL, keyboard navigation and a filter over every section that says where the matches are.
+- (ui): The pages fit the window at FullHD, QHD and 4K (no page scroll bar): only the lists, tables and charts scroll
+  inside; the charts follow the window height.
+- (ui): Cards have a shadow; the KPI cards lift on hover and their value pulses when a refresh changes it
+  (none of it with reduced motion; no depth in the flat look).
+- (ui): The line charts are monotone (no overshoot between days), with a guide line and a smoother tooltip on hover.
+
+### Fixed
+
+- (ui): The charts' screen-reader captions showed under the charts, and the dashboard charts could keep growing.
+
 ## [0.8.0] - 2026-10-25
 
 The first release of this repository, which continues [hibiken/asynqmon](https://github.com/hibiken/asynqmon) on its

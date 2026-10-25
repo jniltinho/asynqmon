@@ -161,7 +161,7 @@ historical window, for the queues you pick.
 | **Task** | every field of a task, its payload and result, and the actions of its state |
 | **Servers** | the asynq servers, their queues and priorities, how busy their workers are and the tasks they run now |
 | **Schedulers** | the periodic tasks, their next and previous enqueue, and the enqueue history |
-| **Redis** | the key numbers and the full `INFO` (or `CLUSTER INFO`) with a filter |
+| **Redis** | the key numbers and the full `INFO` (or `CLUSTER INFO`), a tab per section, with a filter over all of them |
 | **Metrics** | Prometheus time series (with `--prometheus-addr`) |
 | **Settings** | theme, flat look, refresh interval and table size, kept in the browser |
 

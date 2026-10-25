@@ -109,7 +109,7 @@ const charts = computed(() =>
 
 <template>
   <LoadingNote v-if="!loaded" />
-  <div v-else class="space-y-4">
+  <div v-else class="page">
     <section class="card flex flex-wrap items-end gap-x-5 gap-y-3 px-3 py-3" aria-label="Time window">
       <label>
         <span class="lbl">Window</span>
@@ -161,16 +161,21 @@ const charts = computed(() =>
     <ErrorNote v-if="error" what="the metrics" :error="error" :stale="!!data" @retry="refresh" />
     <p v-if="chosen?.size === 0" class="card px-3 py-4 text-fg-muted">Select at least one queue to see its metrics.</p>
 
-    <div v-if="data" class="grid gap-4 xl:grid-cols-2">
-      <section v-for="c in charts" :key="c.key" class="card">
-        <h2 class="card-h" :title="c.help">{{ c.title }}</h2>
-        <p class="px-3 pt-2 text-[11px] text-fg-muted">{{ c.help }}</p>
-        <p v-if="c.error" class="px-3 py-6 text-center text-err">{{ c.error }}</p>
-        <p v-else-if="!c.series.length" class="px-3 py-10 text-center text-fg-muted">No data in this window.</p>
-        <div v-else class="h-64 p-3">
-          <Chart time :series="c.series" :y-format="c.fmt" :label="`${c.title} over time, one line per queue`" />
+    <!-- the charts scroll in their own area, under the fixed time window controls (p-3: room for the card shadows of every theme) -->
+    <div v-if="data" class="fill">
+      <div class="scroll -m-3 p-3" tabindex="0" role="region" aria-label="Metric charts">
+        <div class="grid gap-4 xl:grid-cols-2">
+          <section v-for="c in charts" :key="c.key" class="card">
+            <h2 class="card-h" :title="c.help">{{ c.title }}</h2>
+            <p class="px-3 pt-2 text-[11px] text-fg-muted">{{ c.help }}</p>
+            <p v-if="c.error" class="px-3 py-6 text-center text-err">{{ c.error }}</p>
+            <p v-else-if="!c.series.length" class="px-3 py-10 text-center text-fg-muted">No data in this window.</p>
+            <div v-else class="chart-h p-3">
+              <Chart time :series="c.series" :y-format="c.fmt" :label="`${c.title} over time, one line per queue`" />
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </template>
