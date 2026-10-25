@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A new logo and favicon: a queue mark (stacked tasks, the next one carried to a worker) drawn in each theme's
+  header colors, with SVG, ICO and app icons generated from it.
 - `Options.Theme`: an embedding application can make the UI follow its own theme (served with the page, no theme
   picker).
 - The build uses npm instead of Yarn (`make assets`, Dockerfile).

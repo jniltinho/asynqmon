@@ -5,12 +5,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Activity, Clock, Database, Github, ListChecks, MessageSquare, Pause, Play, Server, Settings, Timer } from 'lucide-vue-next'
 import PanelDialogs from './components/PanelDialogs.vue'
+import Logo from './components/Logo.vue'
 import Toasts from './components/Toasts.vue'
 import { getRedisInfo } from './api'
 import { lastRefresh } from './poll'
 import { settings } from './settings'
-import logoColor from './assets/logo-color.svg'
-import logoWhite from './assets/logo-white.svg'
 
 const route = useRoute()
 const redis = ref(null)
@@ -45,10 +44,7 @@ const scrollTop = () => document.querySelector('main')?.scrollTo(0, 0)
     class="mx-auto flex h-(--view-h) w-full max-w-[1840px] flex-col overflow-hidden bg-surface text-fg shadow-(--shadow-app) outline outline-line sm:my-4 sm:h-[calc(var(--view-h)-32px)] sm:w-[calc(100%-32px)]"
   >
     <header class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-header bg-(image:--bg-header) px-5 py-3">
-      <router-link to="/" class="shrink-0" aria-label="Asynqmon home">
-        <img :src="logoColor" alt="Asynqmon" class="h-10 w-auto" style="display: var(--header-logo-dark-ink)" />
-        <img :src="logoWhite" alt="Asynqmon" class="h-10 w-auto" style="display: var(--header-logo-light-ink)" />
-      </router-link>
+      <router-link to="/" class="shrink-0" aria-label="Asynqmon home"><Logo /></router-link>
       <div class="border-l-2 border-header-bar pl-3 leading-tight">
         <div class="text-[15px] font-semibold text-on-header">Task queue monitor</div>
         <div class="text-[11px] text-on-header-muted">

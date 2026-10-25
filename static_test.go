@@ -31,7 +31,7 @@ func TestUIAssetsHandler(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := map[string]string{".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml"}
+	want := map[string]string{".js": "text/javascript", ".css": "text/css"}
 	seen := map[string]bool{}
 	for _, a := range assets {
 		for ext, ct := range want {
@@ -48,6 +48,12 @@ func TestUIAssetsHandler(t *testing.T) {
 	}
 	if len(seen) != len(want) {
 		t.Errorf("assets checked %v, want one of each of %v", seen, want)
+	}
+	// an SVG image (the favicon) must be image/svg+xml, or the browser does not show it
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest("GET", "/monitoring/favicon.svg", nil))
+	if got := rec.Header().Get("Content-Type"); got != "image/svg+xml" {
+		t.Errorf("favicon.svg: Content-Type %q, want image/svg+xml", got)
 	}
 }
 
