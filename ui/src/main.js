@@ -9,6 +9,8 @@ const flag = (v) => (v === undefined || v.startsWith('/[[') ? '' : v)
 window.ROOT_PATH = flag(window.FLAG_ROOT_PATH)
 window.PROMETHEUS_SERVER_ADDRESS = flag(window.FLAG_PROMETHEUS_SERVER_ADDRESS)
 window.READ_ONLY = flag(window.FLAG_READ_ONLY) === 'true'
+window.HOME_URL = flag(window.FLAG_HOME_URL)
+window.HOME_LABEL = flag(window.FLAG_HOME_LABEL) || 'Back'
 
 // The same paths as the React UI (bookmarks keep working).
 const router = createRouter({

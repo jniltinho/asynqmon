@@ -234,6 +234,7 @@ With [gorilla/mux](https://pkg.go.dev/github.com/gorilla/mux): `r.PathPrefix(h.R
 | `PrometheusAddress` | Prometheus server for the Metrics page |
 | `ReadOnly` | view-only mode |
 | `Theme` | follow the host application's theme (below) |
+| `HomeURL`, `HomeLabel` | a link back to the host application at the top right of the header (a path starting with `/` or an http(s) URL; label default `Back`) |
 
 ### Following the host application's theme
 
