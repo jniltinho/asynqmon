@@ -80,3 +80,34 @@ func TestUIAssetsHandlerTheme(t *testing.T) {
 		}
 	}
 }
+
+func TestUIAssetsHandlerHomeURL(t *testing.T) {
+	page := func(url, label string) string {
+		h := &uiAssetsHandler{contents: staticContents, staticDirPath: "ui/build", indexFileName: "index.html", homeURL: url, homeLabel: label}
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
+		return rec.Body.String()
+	}
+	// html/template escapes the values for a JavaScript string ("/" becomes "\/")
+	if body := page("/", "Back"); !strings.Contains(body, `window.FLAG_HOME_URL = '\/'`) || !strings.Contains(body, `window.FLAG_HOME_LABEL = 'Back'`) {
+		t.Errorf("home link flags not rendered:\n%s", body)
+	}
+	if body := page("", ""); !strings.Contains(body, `window.FLAG_HOME_URL = ''`) {
+		t.Errorf("no home link: want an empty flag in\n%s", body)
+	}
+	if body := page("/", `x';alert(1);//`); strings.Contains(body, `x';alert`) {
+		t.Errorf("label not escaped:\n%s", body)
+	}
+}
+
+func TestValidHomeURL(t *testing.T) {
+	for s, want := range map[string]bool{
+		"/": true, "/admin?x=1": true, "http://panel.example": true, "https://panel.example/home": true,
+		"//evil.example": false, `/\evil.example`: false, "javascript:alert(1)": false, "data:text/html,x": false,
+		"https:": false, "admin": false,
+	} {
+		if got := validHomeURL(s); got != want {
+			t.Errorf("validHomeURL(%q) = %v, want %v", s, got, want)
+		}
+	}
+}
