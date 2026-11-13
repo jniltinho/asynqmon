@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -50,6 +51,27 @@ type Options struct {
 	//
 	// This field is optional. When it is nil, viewers choose the theme in the UI's settings.
 	Theme func() (id string, flat bool)
+
+	// HomeURL is the address of the application that embeds asynqmon: the header shows a link to it at the top right
+	// (a normal link, a full page load). It must be a path starting with a slash ("/", "/admin") or an http(s) URL.
+	//
+	// This field is optional. When it is empty, the header has no such link.
+	HomeURL string
+
+	// HomeLabel is the text of the HomeURL link.
+	//
+	// This field is optional. Default is "Back".
+	HomeLabel string
+}
+
+// validHomeURL accepts a path on this host ("/x", not "//host" or "/\host", which browsers read as another host) or an
+// absolute http(s) URL; a javascript: or data: link is refused.
+func validHomeURL(s string) bool {
+	if strings.HasPrefix(s, "/") {
+		return !strings.HasPrefix(s, "//") && !strings.HasPrefix(s, `/\`)
+	}
+	u, err := url.Parse(s)
+	return err == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Host != ""
 }
 
 // HTTPHandler is a http.Handler for asynqmon application.
@@ -77,6 +99,12 @@ func New(opts Options) *HTTPHandler {
 	// Make sure that RootPath starts with a slash if provided.
 	if opts.RootPath != "" && !strings.HasPrefix(opts.RootPath, "/") {
 		panic(fmt.Sprintf("asynqmon.New: RootPath must start with a slash"))
+	}
+	if opts.HomeURL != "" && !validHomeURL(opts.HomeURL) {
+		panic("asynqmon.New: HomeURL must be a path starting with a slash or an http(s) URL")
+	}
+	if opts.HomeLabel == "" {
+		opts.HomeLabel = "Back"
 	}
 	// Remove tailing slash from RootPath.
 	opts.RootPath = strings.TrimSuffix(opts.RootPath, "/")
@@ -229,6 +257,8 @@ func muxRouter(opts Options, rc redis.UniversalClient, inspector *asynq.Inspecto
 		prometheusAddr: opts.PrometheusAddress,
 		readOnly:       opts.ReadOnly,
 		theme:          opts.Theme,
+		homeURL:        opts.HomeURL,
+		homeLabel:      opts.HomeLabel,
 	}
 
 	return router

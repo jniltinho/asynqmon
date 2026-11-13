@@ -1,6 +1,6 @@
 <!--
   Template for Go's html/template (static.go, custom delimiters): the server fills the root path, the
-  Prometheus address and the read-only flag. Under `vp dev` they stay unevaluated and main.js falls back to defaults.
+  Prometheus address, the read-only flag and the link back to the host application. Under `vp dev` they stay unevaluated and main.js falls back to defaults.
 -->
 <!doctype html>
 <html lang="en" data-theme="/[[.Theme]]" data-flat="/[[.Flat]]" data-host-theme="/[[.HostTheme]]">
@@ -19,6 +19,8 @@
       window.FLAG_ROOT_PATH = '/[[.RootPath]]'
       window.FLAG_PROMETHEUS_SERVER_ADDRESS = '/[[.PrometheusAddr]]'
       window.FLAG_READ_ONLY = '/[[.ReadOnly]]'
+      window.FLAG_HOME_URL = '/[[.HomeURL]]'
+      window.FLAG_HOME_LABEL = '/[[.HomeLabel]]'
       // the theme before the first paint (no flash of the default): the host application's when the server set one
       // (Options.Theme), else the viewer's saved choice; unevaluated template actions (vp dev) mean the default
       ;(() => {
@@ -42,7 +44,7 @@
       })()
     </script>
     <title>Asynq - Monitoring</title>
-    <script type="module" crossorigin src="/[[.RootPath]]/assets/index-B3r3hOC6.js"></script>
+    <script type="module" crossorigin src="/[[.RootPath]]/assets/index-BM8BseH7.js"></script>
     <link rel="modulepreload" crossorigin href="/[[.RootPath]]/assets/settings-CenRqp04.js">
     <link rel="stylesheet" crossorigin href="/[[.RootPath]]/assets/index-Bg93VEFh.css">
   </head>

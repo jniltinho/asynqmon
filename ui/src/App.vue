@@ -3,7 +3,20 @@
 // and a footer.
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Activity, Clock, Database, Github, ListChecks, MessageSquare, Pause, Play, Server, Settings, Timer } from 'lucide-vue-next'
+import {
+  Activity,
+  ArrowLeft,
+  Clock,
+  Database,
+  Github,
+  ListChecks,
+  MessageSquare,
+  Pause,
+  Play,
+  Server,
+  Settings,
+  Timer,
+} from 'lucide-vue-next'
 import PanelDialogs from './components/PanelDialogs.vue'
 import Logo from './components/Logo.vue'
 import Toasts from './components/Toasts.vue'
@@ -14,6 +27,8 @@ import { settings } from './settings'
 const route = useRoute()
 const redis = ref(null)
 const readOnly = window.READ_ONLY
+const homeURL = window.HOME_URL
+const homeLabel = window.HOME_LABEL
 
 const tabs = [
   ['/', 'Queues', ListChecks],
@@ -67,6 +82,11 @@ const scrollTop = () => document.querySelector('main')?.scrollTo(0, 0)
           <component :is="settings.live ? Pause : Play" :size="13" aria-hidden="true" />
           {{ settings.live ? 'Pause' : 'Resume' }}
         </button>
+        <!-- a normal link: the host application's page is a full page load, not a route of this UI -->
+        <a v-if="homeURL" class="btn-ghost" :href="homeURL">
+          <ArrowLeft :size="13" aria-hidden="true" />
+          {{ homeLabel }}
+        </a>
       </div>
     </header>
     <nav class="top-tabs flex flex-wrap bg-tabs bg-(image:--bg-tabs) shadow-(--shadow-tabs)" aria-label="Main">

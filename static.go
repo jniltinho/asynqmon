@@ -24,6 +24,8 @@ type uiAssetsHandler struct {
 	prometheusAddr string
 	readOnly       bool
 	theme          func() (id string, flat bool) // Options.Theme
+	homeURL        string                        // Options.HomeURL, validated by New
+	homeLabel      string
 }
 
 // themeID accepts the theme ids of the UI ([a-z0-9-]); anything else gives the default theme.
@@ -87,6 +89,8 @@ func (h *uiAssetsHandler) renderIndexFile(w http.ResponseWriter) error {
 		Theme          string
 		Flat           bool
 		HostTheme      bool
+		HomeURL        string
+		HomeLabel      string
 	}{
 		RootPath:       h.rootPath,
 		PrometheusAddr: h.prometheusAddr,
@@ -94,6 +98,8 @@ func (h *uiAssetsHandler) renderIndexFile(w http.ResponseWriter) error {
 		Theme:          theme,
 		Flat:           flat,
 		HostTheme:      host,
+		HomeURL:        h.homeURL,
+		HomeLabel:      h.homeLabel,
 	}
 	return tmpl.Execute(w, data)
 }
